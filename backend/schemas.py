@@ -136,7 +136,7 @@ class TokenPurchaseResponse(BaseModel):
 # Withdrawal Schemas
 class WithdrawalRequest(BaseModel):
     amount: float = Field(..., gt=0)
-    phone_number: str = Field(..., regex=r'^254[0-9]{9}$')
+    phone_number: str = Field(..., pattern=r'^254[0-9]{9}$')
 
 class WithdrawalResponse(BaseModel):
     id: str
