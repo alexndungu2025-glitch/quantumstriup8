@@ -1,192 +1,199 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Decimal, ForeignKey, Text, Enum
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from database import Base
-import enum
+from pydantic import BaseModel, Field
+from typing import Optional, List
 from datetime import datetime
+from decimal import Decimal
+from enum import Enum
 import uuid
 
 # Enums
-class UserRole(enum.Enum):
+class UserRole(str, Enum):
     VIEWER = "viewer"
     MODEL = "model"
     ADMIN = "admin"
 
-class TransactionType(enum.Enum):
+class TransactionType(str, Enum):
     PURCHASE = "purchase"
     TIP = "tip"
     PRIVATE_SHOW = "private_show"
     WITHDRAWAL = "withdrawal"
     EARNING = "earning"
 
-class TransactionStatus(enum.Enum):
+class TransactionStatus(str, Enum):
     PENDING = "pending"
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
 
-class WithdrawalStatus(enum.Enum):
+class WithdrawalStatus(str, Enum):
     REQUESTED = "requested"
     PROCESSING = "processing"
     COMPLETED = "completed"
     REJECTED = "rejected"
 
-# User Model
-class User(Base):
-    __tablename__ = "users"
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    username = Column(String(50), unique=True, nullable=False, index=True)
-    email = Column(String(100), unique=True, nullable=False, index=True)
-    phone = Column(String(20), nullable=True)
-    password_hash = Column(String(255), nullable=False)
-    role = Column(Enum(UserRole), nullable=False, default=UserRole.VIEWER)
-    is_active = Column(Boolean, default=True)
-    is_verified = Column(Boolean, default=False)
-    age = Column(Integer, nullable=True)
-    country = Column(String(5), default="ke")  # Country code
+# MongoDB Document Models
+class User(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    username: str
+    email: str
+    phone: Optional[str] = None
+    password_hash: str
+    role: UserRole = UserRole.VIEWER
+    is_active: bool = True
+    is_verified: bool = False
+    age: Optional[int] = None
+    country: str = "ke"
     
     # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    last_login = Column(DateTime(timezone=True), nullable=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    last_login: Optional[datetime] = None
     
-    # Relationships
-    viewer_profile = relationship("ViewerProfile", back_populates="user", uselist=False)
-    model_profile = relationship("ModelProfile", back_populates="user", uselist=False)
-    transactions = relationship("Transaction", back_populates="user")
-    
-# Viewer Profile
-class ViewerProfile(Base):
-    __tablename__ = "viewer_profiles"
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), ForeignKey("users.id"), unique=True, nullable=False)
-    token_balance = Column(Decimal(10, 2), default=0.00)
-    total_spent = Column(Decimal(10, 2), default=0.00)
-    favorite_models = Column(Text, nullable=True)  # JSON string of model IDs
-    
-    # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    
-    # Relationships
-    user = relationship("User", back_populates="viewer_profile")
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
-# Model Profile
-class ModelProfile(Base):
-    __tablename__ = "model_profiles"
+class ViewerProfile(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    user_id: str
+    token_balance: Decimal = Decimal('0.00')
+    total_spent: Decimal = Decimal('0.00')
+    favorite_models: List[str] = []
     
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), ForeignKey("users.id"), unique=True, nullable=False)
-    display_name = Column(String(100), nullable=False)
-    bio = Column(Text, nullable=True)
-    avatar_url = Column(String(500), nullable=True)
+    # Timestamps
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            Decimal: lambda v: float(v)
+        }
+
+class ModelProfile(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    user_id: str
+    display_name: str
+    bio: Optional[str] = None
+    avatar_url: Optional[str] = None
     
     # Streaming settings
-    show_rate = Column(Integer, default=20)  # tokens per minute
-    is_live = Column(Boolean, default=False)
-    is_available = Column(Boolean, default=True)
+    show_rate: int = 20  # tokens per minute
+    is_live: bool = False
+    is_available: bool = True
     
     # Stats
-    total_earnings = Column(Decimal(10, 2), default=0.00)
-    available_balance = Column(Decimal(10, 2), default=0.00)
-    total_viewers = Column(Integer, default=0)
-    rating = Column(Decimal(3, 2), default=0.00)
-    total_shows = Column(Integer, default=0)
-    online_hours = Column(Integer, default=0)
+    total_earnings: Decimal = Decimal('0.00')
+    available_balance: Decimal = Decimal('0.00')
+    total_viewers: int = 0
+    rating: Decimal = Decimal('0.00')
+    total_shows: int = 0
+    online_hours: int = 0
     
     # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    last_online = Column(DateTime(timezone=True), nullable=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    last_online: Optional[datetime] = None
     
-    # Relationships
-    user = relationship("User", back_populates="model_profile")
-    withdrawals = relationship("Withdrawal", back_populates="model")
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            Decimal: lambda v: float(v)
+        }
 
-# Transaction Model
-class Transaction(Base):
-    __tablename__ = "transactions"
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
-    transaction_type = Column(Enum(TransactionType), nullable=False)
-    amount = Column(Decimal(10, 2), nullable=False)  # In KES for purchases, tokens for others
-    tokens = Column(Integer, nullable=True)  # Token amount
-    status = Column(Enum(TransactionStatus), default=TransactionStatus.PENDING)
+class Transaction(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    user_id: str
+    transaction_type: TransactionType
+    amount: Decimal  # In KES for purchases, tokens for others
+    tokens: Optional[int] = None  # Token amount
+    status: TransactionStatus = TransactionStatus.PENDING
     
     # Payment details
-    mpesa_code = Column(String(20), nullable=True)  # M-Pesa confirmation code
-    phone_number = Column(String(15), nullable=True)
-    reference = Column(String(100), nullable=True)
+    mpesa_code: Optional[str] = None  # M-Pesa confirmation code
+    phone_number: Optional[str] = None
+    reference: Optional[str] = None
     
     # Additional data
-    model_id = Column(String(36), nullable=True)  # For tips and private shows
-    description = Column(String(255), nullable=True)
-    metadata = Column(Text, nullable=True)  # JSON string for additional data
+    model_id: Optional[str] = None  # For tips and private shows
+    description: Optional[str] = None
+    metadata: Optional[dict] = None  # Additional data
     
     # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
     
-    # Relationships
-    user = relationship("User", back_populates="transactions")
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            Decimal: lambda v: float(v)
+        }
 
-# Withdrawal Model
-class Withdrawal(Base):
-    __tablename__ = "withdrawals"
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    model_id = Column(String(36), ForeignKey("model_profiles.id"), nullable=False)
-    amount = Column(Decimal(10, 2), nullable=False)  # Amount in KES
-    phone_number = Column(String(15), nullable=False)
-    status = Column(Enum(WithdrawalStatus), default=WithdrawalStatus.REQUESTED)
+class Withdrawal(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    model_id: str
+    amount: Decimal  # Amount in KES
+    phone_number: str
+    status: WithdrawalStatus = WithdrawalStatus.REQUESTED
     
     # Processing details
-    mpesa_code = Column(String(20), nullable=True)
-    admin_notes = Column(Text, nullable=True)
-    processed_by = Column(String(36), nullable=True)  # Admin user ID
-    processed_at = Column(DateTime(timezone=True), nullable=True)
+    mpesa_code: Optional[str] = None
+    admin_notes: Optional[str] = None
+    processed_by: Optional[str] = None  # Admin user ID
+    processed_at: Optional[datetime] = None
     
     # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
     
-    # Relationships
-    model = relationship("ModelProfile", back_populates="withdrawals")
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+            Decimal: lambda v: float(v)
+        }
 
-# Private Show Model
-class PrivateShow(Base):
-    __tablename__ = "private_shows"
-    
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    viewer_id = Column(String(36), ForeignKey("users.id"), nullable=False)
-    model_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+class PrivateShow(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    viewer_id: str
+    model_id: str
     
     # Show details
-    rate_per_minute = Column(Integer, nullable=False)  # tokens per minute
-    duration_minutes = Column(Integer, default=0)  # Actual duration
-    total_cost = Column(Integer, default=0)  # Total tokens spent
+    rate_per_minute: int  # tokens per minute
+    duration_minutes: int = 0  # Actual duration
+    total_cost: int = 0  # Total tokens spent
     
     # Status and timing
-    status = Column(String(20), default="requested")  # requested, active, completed, cancelled
-    started_at = Column(DateTime(timezone=True), nullable=True)
-    ended_at = Column(DateTime(timezone=True), nullable=True)
+    status: str = "requested"  # requested, active, completed, cancelled
+    started_at: Optional[datetime] = None
+    ended_at: Optional[datetime] = None
     
     # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
-# System Settings Model
-class SystemSettings(Base):
-    __tablename__ = "system_settings"
-    
-    id = Column(Integer, primary_key=True)
-    key = Column(String(100), unique=True, nullable=False)
-    value = Column(Text, nullable=False)
-    description = Column(String(255), nullable=True)
+class SystemSettings(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    key: str
+    value: str
+    description: Optional[str] = None
     
     # Timestamps
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
