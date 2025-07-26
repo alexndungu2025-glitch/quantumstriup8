@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-QuantumStrip Backend Authentication System Test Suite
-Tests all authentication endpoints and functionality
+QuantumStrip Backend Complete System Test Suite
+Tests all backend endpoints including authentication, tokens, models, admin, and streaming
 """
 
 import requests
@@ -10,6 +10,7 @@ import sys
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import time
 
 # Load environment variables
 load_dotenv('/app/frontend/.env')
