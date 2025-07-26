@@ -1,52 +1,47 @@
-import mysql.connector
-from mysql.connector import Error
-import os
-from dotenv import load_dotenv
-from database import create_tables, engine
+import asyncio
+from database import (
+    users_collection, 
+    viewer_profiles_collection, 
+    model_profiles_collection,
+    system_settings_collection,
+    client
+)
+from models import User, UserRole, ViewerProfile, SystemSettings
+from auth import hash_password
 import logging
-
-load_dotenv()
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def create_database():
-    """Create the QuantumStrip database if it doesn't exist"""
+async def create_indexes():
+    """Create database indexes for better performance"""
     try:
-        # Connect to MySQL server without specifying database
-        connection = mysql.connector.connect(
-            host=os.getenv("MYSQL_HOST", "localhost"),
-            port=int(os.getenv("MYSQL_PORT", "3306")),
-            user=os.getenv("MYSQL_USER", "root"),
-            password=os.getenv("MYSQL_PASSWORD", "")
-        )
+        # User indexes
+        await users_collection.create_index([("email", 1)], unique=True)
+        await users_collection.create_index([("username", 1)], unique=True)
+        await users_collection.create_index([("role", 1)])
         
-        if connection.is_connected():
-            cursor = connection.cursor()
-            database_name = os.getenv("MYSQL_DATABASE", "quantumstrip")
-            
-            # Create database if it doesn't exist
-            cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database_name}")
-            logger.info(f"Database '{database_name}' created or already exists")
-            
-            # Use the database
-            cursor.execute(f"USE {database_name}")
-            logger.info(f"Using database '{database_name}'")
-            
-            cursor.close()
-            connection.close()
-            
-    except Error as e:
-        logger.error(f"Error creating database: {e}")
+        # Viewer profile indexes
+        await viewer_profiles_collection.create_index([("user_id", 1)], unique=True)
+        
+        # Model profile indexes
+        await model_profiles_collection.create_index([("user_id", 1)], unique=True)
+        await model_profiles_collection.create_index([("is_live", 1)])
+        await model_profiles_collection.create_index([("is_available", 1)])
+        
+        # System settings indexes
+        await system_settings_collection.create_index([("key", 1)], unique=True)
+        
+        logger.info("Database indexes created successfully")
+        
+    except Exception as e:
+        logger.error(f"Error creating indexes: {e}")
         raise e
 
-def init_system_settings():
+async def init_system_settings():
     """Initialize default system settings"""
-    from models import SystemSettings
-    from database import SessionLocal
-    
-    db = SessionLocal()
     try:
         # Default settings
         default_settings = [
@@ -82,37 +77,25 @@ def init_system_settings():
             }
         ]
         
-        for setting in default_settings:
-            existing = db.query(SystemSettings).filter(
-                SystemSettings.key == setting["key"]
-            ).first()
+        for setting_data in default_settings:
+            existing = await system_settings_collection.find_one({"key": setting_data["key"]})
             
             if not existing:
-                new_setting = SystemSettings(**setting)
-                db.add(new_setting)
-                logger.info(f"Added system setting: {setting['key']}")
+                setting = SystemSettings(**setting_data)
+                await system_settings_collection.insert_one(setting.dict(by_alias=True))
+                logger.info(f"Added system setting: {setting_data['key']}")
         
-        db.commit()
+        logger.info("System settings initialized successfully")
         
     except Exception as e:
-        db.rollback()
         logger.error(f"Error initializing system settings: {e}")
         raise e
-    finally:
-        db.close()
 
-def create_admin_user():
+async def create_admin_user():
     """Create default admin user"""
-    from models import User, UserRole
-    from auth import hash_password
-    from database import SessionLocal
-    
-    db = SessionLocal()
     try:
         # Check if admin exists
-        admin_exists = db.query(User).filter(
-            User.role == UserRole.ADMIN
-        ).first()
+        admin_exists = await users_collection.find_one({"role": UserRole.ADMIN})
         
         if not admin_exists:
             admin_user = User(
@@ -127,45 +110,92 @@ def create_admin_user():
                 country="ke"
             )
             
-            db.add(admin_user)
-            db.commit()
+            await users_collection.insert_one(admin_user.dict(by_alias=True))
             logger.info("Default admin user created: admin@quantumstrip.com / admin123")
         else:
             logger.info("Admin user already exists")
             
     except Exception as e:
-        db.rollback()
         logger.error(f"Error creating admin user: {e}")
         raise e
-    finally:
-        db.close()
 
-def main():
-    """Initialize the database and create all tables"""
+async def create_test_users():
+    """Create test users for development"""
     try:
-        logger.info("Starting database initialization...")
+        # Test viewer
+        test_viewer_exists = await users_collection.find_one({"email": "viewer@test.com"})
+        if not test_viewer_exists:
+            test_viewer = User(
+                username="testviewer",
+                email="viewer@test.com",
+                phone="254712345678",
+                password_hash=hash_password("password123"),
+                role=UserRole.VIEWER,
+                is_active=True,
+                is_verified=True,
+                age=25,
+                country="ke"
+            )
+            result = await users_collection.insert_one(test_viewer.dict(by_alias=True))
+            
+            # Create viewer profile
+            viewer_profile = ViewerProfile(
+                user_id=result.inserted_id,
+                token_balance=100.00  # Give test user some tokens
+            )
+            await viewer_profiles_collection.insert_one(viewer_profile.dict(by_alias=True))
+            logger.info("Test viewer created: viewer@test.com / password123")
         
-        # Step 1: Create database
-        create_database()
+        # Test model
+        test_model_exists = await users_collection.find_one({"email": "model@test.com"})
+        if not test_model_exists:
+            test_model = User(
+                username="testmodel",
+                email="model@test.com",
+                phone="254787654321",
+                password_hash=hash_password("password123"),
+                role=UserRole.MODEL,
+                is_active=True,
+                is_verified=True,
+                age=22,
+                country="ke"
+            )
+            await users_collection.insert_one(test_model.dict(by_alias=True))
+            logger.info("Test model created: model@test.com / password123")
+            
+    except Exception as e:
+        logger.error(f"Error creating test users: {e}")
+        raise e
+
+async def main():
+    """Initialize the database"""
+    try:
+        logger.info("Starting QuantumStrip database initialization...")
         
-        # Step 2: Create all tables
-        logger.info("Creating database tables...")
-        create_tables()
-        logger.info("Database tables created successfully")
+        # Step 1: Create indexes
+        logger.info("Creating database indexes...")
+        await create_indexes()
         
-        # Step 3: Initialize system settings
+        # Step 2: Initialize system settings
         logger.info("Initializing system settings...")
-        init_system_settings()
+        await init_system_settings()
         
-        # Step 4: Create admin user
+        # Step 3: Create admin user
         logger.info("Creating admin user...")
-        create_admin_user()
+        await create_admin_user()
+        
+        # Step 4: Create test users (for development)
+        logger.info("Creating test users...")
+        await create_test_users()
         
         logger.info("Database initialization completed successfully!")
         
     except Exception as e:
         logger.error(f"Database initialization failed: {e}")
         raise e
+    finally:
+        # Close the MongoDB connection
+        client.close()
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
