@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
-from decimal import Decimal
 from enum import Enum
 import uuid
 
@@ -49,7 +48,7 @@ class User(BaseModel):
     last_login: Optional[datetime] = None
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
@@ -57,8 +56,8 @@ class User(BaseModel):
 class ViewerProfile(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     user_id: str
-    token_balance: Decimal = Decimal('0.00')
-    total_spent: Decimal = Decimal('0.00')
+    token_balance: float = 0.00
+    total_spent: float = 0.00
     favorite_models: List[str] = []
     
     # Timestamps
@@ -66,10 +65,9 @@ class ViewerProfile(BaseModel):
     updated_at: Optional[datetime] = None
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            Decimal: lambda v: float(v)
+            datetime: lambda v: v.isoformat()
         }
 
 class ModelProfile(BaseModel):
@@ -85,10 +83,10 @@ class ModelProfile(BaseModel):
     is_available: bool = True
     
     # Stats
-    total_earnings: Decimal = Decimal('0.00')
-    available_balance: Decimal = Decimal('0.00')
+    total_earnings: float = 0.00
+    available_balance: float = 0.00
     total_viewers: int = 0
-    rating: Decimal = Decimal('0.00')
+    rating: float = 0.00
     total_shows: int = 0
     online_hours: int = 0
     
@@ -98,17 +96,16 @@ class ModelProfile(BaseModel):
     last_online: Optional[datetime] = None
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            Decimal: lambda v: float(v)
+            datetime: lambda v: v.isoformat()
         }
 
 class Transaction(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     user_id: str
     transaction_type: TransactionType
-    amount: Decimal  # In KES for purchases, tokens for others
+    amount: float  # In KES for purchases, tokens for others
     tokens: Optional[int] = None  # Token amount
     status: TransactionStatus = TransactionStatus.PENDING
     
@@ -127,16 +124,15 @@ class Transaction(BaseModel):
     updated_at: Optional[datetime] = None
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            Decimal: lambda v: float(v)
+            datetime: lambda v: v.isoformat()
         }
 
 class Withdrawal(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     model_id: str
-    amount: Decimal  # Amount in KES
+    amount: float  # Amount in KES
     phone_number: str
     status: WithdrawalStatus = WithdrawalStatus.REQUESTED
     
@@ -151,10 +147,9 @@ class Withdrawal(BaseModel):
     updated_at: Optional[datetime] = None
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         json_encoders = {
-            datetime: lambda v: v.isoformat(),
-            Decimal: lambda v: float(v)
+            datetime: lambda v: v.isoformat()
         }
 
 class PrivateShow(BaseModel):
@@ -177,7 +172,7 @@ class PrivateShow(BaseModel):
     updated_at: Optional[datetime] = None
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
@@ -193,7 +188,7 @@ class SystemSettings(BaseModel):
     updated_at: Optional[datetime] = None
     
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
