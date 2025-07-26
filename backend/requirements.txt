@@ -23,3 +23,6 @@ numpy>=1.26.0
 python-multipart>=0.0.9
 jq>=1.6.0
 typer>=0.9.0
+mysql-connector-python==9.4.0
+sqlalchemy==2.0.41
+bcrypt==4.3.0
