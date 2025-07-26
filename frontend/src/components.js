@@ -1019,7 +1019,6 @@ export const StreamingInterface = ({ activeTab, navigateTo, userType, isAuthenti
   return (
     <>
       <Header 
-        navigateTo={navigateTo} 
         userType={userType} 
         isAuthenticated={isAuthenticated} 
         onLogout={onLogout}
