@@ -21,6 +21,10 @@ withdrawals_collection = database.withdrawals
 private_shows_collection = database.private_shows
 system_settings_collection = database.system_settings
 
+async def get_database():
+    """Get database instance"""
+    return database
+
 async def close_mongo_connection():
     """Close MongoDB connection"""
     client.close()
