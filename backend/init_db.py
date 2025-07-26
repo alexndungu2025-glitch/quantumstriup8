@@ -136,14 +136,14 @@ async def create_test_users():
                 age=25,
                 country="ke"
             )
-            result = await users_collection.insert_one(test_viewer.dict(by_alias=True))
+            result = await users_collection.insert_one(test_viewer.model_dump(by_alias=True))
             
             # Create viewer profile
             viewer_profile = ViewerProfile(
                 user_id=result.inserted_id,
                 token_balance=100.00  # Give test user some tokens
             )
-            await viewer_profiles_collection.insert_one(viewer_profile.dict(by_alias=True))
+            await viewer_profiles_collection.insert_one(viewer_profile.model_dump(by_alias=True))
             logger.info("Test viewer created: viewer@test.com / password123")
         
         # Test model
