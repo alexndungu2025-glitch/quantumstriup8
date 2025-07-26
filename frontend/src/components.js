@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
 import { useTokens, useModelEarnings, useAdminStats } from './hooks';
 import { useResponsive, getResponsiveSpacing, getResponsiveText, getResponsiveGrid } from './responsive';
 import { apiUtils } from './api';
+import LanguageSwitcher from './components/LanguageSwitcher';
 
 // Mock data for performers (existing)
 const mockPerformers = [
