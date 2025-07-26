@@ -116,7 +116,7 @@ class TransactionResponse(BaseModel):
 # Token Purchase Schemas
 class TokenPurchaseRequest(BaseModel):
     tokens: int = Field(..., gt=0)
-    phone_number: str = Field(..., regex=r'^254[0-9]{9}$')
+    phone_number: str = Field(..., pattern=r'^254[0-9]{9}$')
     
     @validator('tokens')
     def validate_token_packages(cls, v):
