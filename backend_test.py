@@ -111,10 +111,14 @@ class QuantumStripTester:
         """Test user registration functionality"""
         print_test_header("User Registration")
         
+        # Generate unique emails for this test run
+        import time
+        timestamp = str(int(time.time()))
+        
         # Test viewer registration
         viewer_data = {
-            "username": "testviewer2024",
-            "email": "testviewer2024@example.com",
+            "username": f"testviewer{timestamp}",
+            "email": f"testviewer{timestamp}@example.com",
             "phone": "254712345679",
             "password": "securepass123",
             "role": "viewer",
