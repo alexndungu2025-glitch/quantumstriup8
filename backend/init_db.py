@@ -82,7 +82,7 @@ async def init_system_settings():
             
             if not existing:
                 setting = SystemSettings(**setting_data)
-                await system_settings_collection.insert_one(setting.dict(by_alias=True))
+                await system_settings_collection.insert_one(setting.model_dump(by_alias=True))
                 logger.info(f"Added system setting: {setting_data['key']}")
         
         logger.info("System settings initialized successfully")
