@@ -50,8 +50,11 @@ async def health_check():
         "timestamp": datetime.utcnow().isoformat()
     }
 
-# Include authentication routes
+# Include all routers
 api_router.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+api_router.include_router(token_router, prefix="/tokens", tags=["Token System"])
+api_router.include_router(model_router, prefix="/models", tags=["Model Features"])
+api_router.include_router(admin_router, prefix="/admin", tags=["Admin Panel"])
 
 # Include the router in the main app
 app.include_router(api_router)
