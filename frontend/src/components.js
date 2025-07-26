@@ -1026,5 +1026,337 @@ export const BottomCTA = ({ navigateTo, isAuthenticated }) => {
   );
 };
 
+// Token Purchase Page Component
+export const TokenPurchasePage = ({ navigateTo, userType }) => {
+  const [selectedPackage, setSelectedPackage] = useState(tokenPackages[1]);
+  const [paymentMethod, setPaymentMethod] = useState('mpesa');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handlePurchase = async (e) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    
+    // Mock M-Pesa STK Push
+    setTimeout(() => {
+      alert(`M-Pesa STK Push sent to ${phoneNumber}! Please enter your PIN to complete the purchase of ${selectedPackage.tokens} tokens for KES ${selectedPackage.price}.`);
+      setIsProcessing(false);
+      navigateTo('viewer-dashboard');
+    }, 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black">
+      <Header 
+        navigateTo={navigateTo} 
+        userType={userType} 
+        isAuthenticated={true}
+        onLogout={() => navigateTo('home')}
+      />
+      
+      <div className="max-w-4xl mx-auto p-6 pt-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Purchase Tokens</h1>
+          <p className="text-gray-300">Choose your token package and pay securely with M-Pesa</p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Token Packages */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">Select Package</h2>
+            
+            <div className="space-y-3">
+              {tokenPackages.map((pkg) => (
+                <div
+                  key={pkg.tokens}
+                  onClick={() => setSelectedPackage(pkg)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    selectedPackage.tokens === pkg.tokens
+                      ? 'border-purple-500 bg-purple-900/30'
+                      : 'border-gray-600 hover:border-gray-500'
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <div className="flex items-center">
+                        <span className="text-xl font-bold text-white mr-2">{pkg.tokens}</span>
+                        <span className="text-gray-300">Tokens</span>
+                        {pkg.popular && (
+                          <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full ml-2">
+                            POPULAR
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        KES {(pkg.price / pkg.tokens).toFixed(1)} per token
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold text-green-400">
+                        KES {pkg.price.toLocaleString()}
+                      </div>
+                      {pkg.tokens >= 200 && (
+                        <div className="text-xs text-green-400">Save {Math.round((1 - pkg.price / pkg.tokens / 10) * 100)}%</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-6 p-4 bg-blue-900/30 rounded-lg border border-blue-700">
+              <h3 className="text-blue-300 font-semibold mb-2">What can you do with tokens?</h3>
+              <ul className="text-sm text-gray-300 space-y-1">
+                <li>• Private shows: 20 tokens/minute</li>
+                <li>• Tip models: Starting from 1 token</li>
+                <li>• Send messages and requests</li>
+                <li>• Access exclusive content</li>
+              </ul>
+            </div>
+          </div>
+          
+          {/* Payment Form */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">Payment Details</h2>
+            
+            <form onSubmit={handlePurchase} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Payment Method
+                </label>
+                <div className="grid grid-cols-1 gap-3">
+                  <div
+                    onClick={() => setPaymentMethod('mpesa')}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      paymentMethod === 'mpesa'
+                        ? 'border-green-500 bg-green-900/30'
+                        : 'border-gray-600 hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <div className="bg-green-600 text-white px-3 py-1 rounded font-bold text-sm mr-3">
+                        M-PESA
+                      </div>
+                      <span className="text-white">Pay with M-Pesa</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  M-Pesa Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-green-500 focus:outline-none"
+                  placeholder="254712345678"
+                  required
+                />
+                <p className="text-xs text-gray-400 mt-1">
+                  Enter your M-Pesa registered phone number
+                </p>
+              </div>
+              
+              <div className="bg-gray-700 rounded-lg p-4">
+                <h3 className="text-white font-semibold mb-2">Order Summary</h3>
+                <div className="flex justify-between text-gray-300 mb-2">
+                  <span>{selectedPackage.tokens} Tokens</span>
+                  <span>KES {selectedPackage.price.toLocaleString()}</span>
+                </div>
+                <div className="border-t border-gray-600 pt-2">
+                  <div className="flex justify-between text-white font-semibold">
+                    <span>Total</span>
+                    <span>KES {selectedPackage.price.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <button
+                type="submit"
+                disabled={isProcessing}
+                className={`w-full py-3 rounded-lg font-semibold transition-all ${
+                  isProcessing
+                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800'
+                }`}
+              >
+                {isProcessing ? (
+                  <div className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </div>
+                ) : (
+                  `Pay KES ${selectedPackage.price.toLocaleString()} with M-Pesa`
+                )}
+              </button>
+            </form>
+            
+            <div className="mt-6 text-center">
+              <button
+                onClick={() => navigateTo('viewer-dashboard')}
+                className="text-gray-400 hover:text-white text-sm"
+              >
+                ← Back to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Viewer Dashboard Component
+export const ViewerDashboard = ({ navigateTo, onLogout }) => {
+  const [userTokens] = useState(150);
+  const [favoriteModels] = useState(mockPerformers.slice(0, 4));
+  const [recentPurchases] = useState([
+    { id: 1, date: '2024-01-15', tokens: 100, amount: 1000, status: 'completed' },
+    { id: 2, date: '2024-01-10', tokens: 50, amount: 500, status: 'completed' },
+  ]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black">
+      <Header 
+        navigateTo={navigateTo} 
+        userType="viewer" 
+        isAuthenticated={true}
+        onLogout={onLogout}
+        userTokens={userTokens}
+      />
+      
+      <div className="max-w-6xl mx-auto p-6 pt-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Viewer Dashboard</h1>
+          <button
+            onClick={() => navigateTo('token-purchase')}
+            className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800"
+          >
+            Buy Tokens
+          </button>
+        </div>
+        
+        {/* Stats Cards */}
+        <div className="grid md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-green-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{userTokens}</p>
+                <p className="text-gray-400 text-sm">Available Tokens</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-pink-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{favoriteModels.length}</p>
+                <p className="text-gray-400 text-sm">Favorite Models</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-blue-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">12</p>
+                <p className="text-gray-400 text-sm">Private Shows</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-purple-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">KES 1,500</p>
+                <p className="text-gray-400 text-sm">Total Spent</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Favorite Models */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">Favorite Models</h2>
+            <div className="space-y-4">
+              {favoriteModels.map((model) => (
+                <div key={model.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                  <div className="flex items-center">
+                    <img 
+                      src={model.image} 
+                      alt={model.name}
+                      className="w-12 h-12 rounded-full object-cover mr-3"
+                    />
+                    <div>
+                      <h3 className="text-white font-semibold">{model.name}</h3>
+                      <p className="text-gray-400 text-sm">
+                        {model.isLive ? (
+                          <span className="text-green-400">● Online</span>
+                        ) : (
+                          'Offline'
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm">
+                    {model.isLive ? 'Watch' : 'Message'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Recent Purchases */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">Recent Purchases</h2>
+            <div className="space-y-4">
+              {recentPurchases.map((purchase) => (
+                <div key={purchase.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                  <div>
+                    <h3 className="text-white font-semibold">{purchase.tokens} Tokens</h3>
+                    <p className="text-gray-400 text-sm">
+                      {new Date(purchase.date).toLocaleDateString()} • KES {purchase.amount}
+                    </p>
+                  </div>
+                  <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs">
+                    {purchase.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Export all components and data
 export { mockPerformers, mockCouples, tokenPackages, countryFlags };
