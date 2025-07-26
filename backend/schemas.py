@@ -1,7 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, validator
 from typing import Optional, List
 from datetime import datetime
-from decimal import Decimal
 from models import UserRole, TransactionType, TransactionStatus
 
 # Base User Schema
@@ -40,8 +39,8 @@ class TokenResponse(BaseModel):
 # Viewer Profile Schemas
 class ViewerProfileResponse(BaseModel):
     id: str
-    token_balance: Decimal
-    total_spent: Decimal
+    token_balance: float
+    total_spent: float
     favorite_models: List[str] = []
     
     class Config:
@@ -72,10 +71,10 @@ class ModelProfileResponse(BaseModel):
     show_rate: int
     is_live: bool
     is_available: bool
-    total_earnings: Decimal
-    available_balance: Decimal
+    total_earnings: float
+    available_balance: float
     total_viewers: int
-    rating: Decimal
+    rating: float
     total_shows: int
     online_hours: int
     created_at: datetime
@@ -88,12 +87,12 @@ class ModelDashboard(BaseModel):
     user: UserResponse
     profile: ModelProfileResponse
     recent_earnings: List['TransactionResponse'] = []
-    total_earnings_today: Decimal = Decimal('0.00')
+    total_earnings_today: float = 0.00
 
 # Transaction Schemas
 class TransactionCreate(BaseModel):
     transaction_type: TransactionType
-    amount: Decimal = Field(..., gt=0)
+    amount: float = Field(..., gt=0)
     tokens: Optional[int] = Field(None, gt=0)
     phone_number: Optional[str] = None
     model_id: Optional[str] = None
@@ -102,7 +101,7 @@ class TransactionCreate(BaseModel):
 class TransactionResponse(BaseModel):
     id: str
     transaction_type: TransactionType
-    amount: Decimal
+    amount: float
     tokens: Optional[int] = None
     status: TransactionStatus
     mpesa_code: Optional[str] = None
@@ -129,19 +128,19 @@ class TokenPurchaseRequest(BaseModel):
 class TokenPurchaseResponse(BaseModel):
     transaction_id: str
     tokens: int
-    amount: Decimal
+    amount: float
     phone_number: str
     status: str
     message: str
 
 # Withdrawal Schemas
 class WithdrawalRequest(BaseModel):
-    amount: Decimal = Field(..., gt=0)
+    amount: float = Field(..., gt=0)
     phone_number: str = Field(..., regex=r'^254[0-9]{9}$')
 
 class WithdrawalResponse(BaseModel):
     id: str
-    amount: Decimal
+    amount: float
     phone_number: str
     status: str
     created_at: datetime
@@ -176,8 +175,8 @@ class SystemSettingResponse(BaseModel):
 class PlatformStats(BaseModel):
     total_users: int = 0
     active_models: int = 0
-    total_revenue: Decimal = Decimal('0.00')
-    daily_revenue: Decimal = Decimal('0.00')
+    total_revenue: float = 0.00
+    daily_revenue: float = 0.00
     total_transactions: int = 0
 
 # Error Response
