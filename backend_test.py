@@ -154,8 +154,8 @@ class QuantumStripTester:
 
         # Test model registration
         model_data = {
-            "username": "testmodel2024",
-            "email": "testmodel2024@example.com",
+            "username": f"testmodel{timestamp}",
+            "email": f"testmodel{timestamp}@example.com",
             "phone": "254787654322",
             "password": "securepass123",
             "role": "model",
