@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import { useTokens, useModelEarnings, useAdminStats } from './hooks';
+import { useResponsive, getResponsiveSpacing, getResponsiveText, getResponsiveGrid } from './responsive';
+import { apiUtils } from './api';
 
 // Mock data for performers (existing)
 const mockPerformers = [
