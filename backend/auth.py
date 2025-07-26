@@ -3,10 +3,9 @@ from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from fastapi import HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from sqlalchemy.orm import Session
 import os
-from database import get_db
-from models import User
+from database import users_collection
+from models import User, UserRole
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -58,22 +57,22 @@ def verify_token(token: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    db: Session = Depends(get_db)
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
     """Get current authenticated user"""
     token = credentials.credentials
     user_id = verify_token(token)
     
-    user = db.query(User).filter(User.id == user_id).first()
-    if user is None:
+    user_data = await users_collection.find_one({"_id": user_id})
+    if user_data is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
+    user = User(**user_data)
     if not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -82,27 +81,27 @@ def get_current_user(
     
     return user
 
-def get_current_viewer(current_user: User = Depends(get_current_user)):
+async def get_current_viewer(current_user: User = Depends(get_current_user)):
     """Get current user if they are a viewer"""
-    if current_user.role.value != "viewer":
+    if current_user.role != UserRole.VIEWER:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied. Viewer role required."
         )
     return current_user
 
-def get_current_model(current_user: User = Depends(get_current_user)):
+async def get_current_model(current_user: User = Depends(get_current_user)):
     """Get current user if they are a model"""
-    if current_user.role.value != "model":
+    if current_user.role != UserRole.MODEL:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied. Model role required."
         )
     return current_user
 
-def get_current_admin(current_user: User = Depends(get_current_user)):
+async def get_current_admin(current_user: User = Depends(get_current_user)):
     """Get current user if they are an admin"""
-    if current_user.role.value != "admin":
+    if current_user.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied. Admin role required."
