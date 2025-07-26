@@ -595,7 +595,7 @@ export const RegisterPage = () => {
           <p className="text-gray-400">
             Already have an account?{' '}
             <button
-              onClick={() => navigateTo('login')}
+              onClick={() => navigate('/login')}
               className="text-purple-400 hover:text-purple-300 font-semibold"
             >
               Sign in
@@ -603,7 +603,7 @@ export const RegisterPage = () => {
           </p>
           
           <button
-            onClick={() => navigateTo('home')}
+            onClick={() => navigate('/')}
             className="mt-4 text-gray-500 hover:text-gray-300 text-sm"
           >
             ← Back to Home
