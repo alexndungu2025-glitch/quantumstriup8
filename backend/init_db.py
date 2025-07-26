@@ -110,7 +110,7 @@ async def create_admin_user():
                 country="ke"
             )
             
-            await users_collection.insert_one(admin_user.dict(by_alias=True))
+            await users_collection.insert_one(admin_user.model_dump(by_alias=True))
             logger.info("Default admin user created: admin@quantumstrip.com / admin123")
         else:
             logger.info("Admin user already exists")
