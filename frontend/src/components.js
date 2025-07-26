@@ -615,5 +615,416 @@ export const Header = ({ navigateTo, userType, isAuthenticated, onLogout, userTo
   );
 };
 
+// Sidebar Component (Updated for QuantumStrip)
+export const Sidebar = () => {
+  const [activeMenu, setActiveMenu] = useState('home');
+  
+  return (
+    <aside className="w-64 bg-gray-900 h-full border-r border-gray-700">
+      {/* Token Giveaway Banner */}
+      <div className="bg-gradient-to-r from-green-500 to-green-600 p-3 m-4 rounded-lg">
+        <div className="flex items-center text-white">
+          <div className="text-2xl font-bold mr-2">50</div>
+          <div>
+            <div className="font-semibold">Tokens</div>
+            <div className="text-sm">Free Bonus</div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Navigation Menu */}
+      <nav className="px-4">
+        <div className="space-y-1">
+          <button 
+            onClick={() => setActiveMenu('home')}
+            className={`w-full flex items-center px-3 py-2 rounded-lg text-left transition-colors ${
+              activeMenu === 'home' ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-800'
+            }`}
+          >
+            <svg className="w-5 h-5 mr-3" fill="currentColor">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+            Home
+          </button>
+          
+          <button 
+            onClick={() => setActiveMenu('feed')}
+            className={`w-full flex items-center px-3 py-2 rounded-lg text-left transition-colors ${
+              activeMenu === 'feed' ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-800'
+            }`}
+          >
+            <svg className="w-5 h-5 mr-3" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            Feed
+          </button>
+          
+          <button 
+            onClick={() => setActiveMenu('favorites')}
+            className={`w-full flex items-center px-3 py-2 rounded-lg text-left transition-colors ${
+              activeMenu === 'favorites' ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-800'
+            }`}
+          >
+            <svg className="w-5 h-5 mr-3" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            My Favorites
+          </button>
+          
+          <button 
+            onClick={() => setActiveMenu('privates')}
+            className={`w-full flex items-center px-3 py-2 rounded-lg text-left transition-colors ${
+              activeMenu === 'privates' ? 'bg-purple-600 text-white' : 'text-gray-300 hover:bg-gray-800'
+            }`}
+          >
+            <svg className="w-5 h-5 mr-3" fill="currentColor">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM12 17c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+            </svg>
+            Private Shows
+          </button>
+        </div>
+        
+        <div className="mt-8">
+          <h3 className="text-gray-400 text-sm font-semibold mb-3">CATEGORIES</h3>
+          <div className="space-y-1">
+            <button className="w-full flex items-center justify-between px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+              <div className="flex items-center">
+                <span className="w-5 h-5 mr-3 text-center">🇰🇪</span>
+                Kenyan Models
+              </div>
+              <span className="text-xs bg-gray-700 px-2 py-1 rounded">156</span>
+            </button>
+            
+            <button className="w-full flex items-center justify-between px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+              <div className="flex items-center">
+                <span className="w-5 h-5 mr-3 text-center">🇺🇬</span>
+                Ugandan Models
+              </div>
+              <span className="text-xs bg-gray-700 px-2 py-1 rounded">89</span>
+            </button>
+            
+            <button className="w-full flex items-center justify-between px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+              <div className="flex items-center">
+                <span className="w-5 h-5 mr-3 text-center">🇹🇿</span>
+                Tanzanian Models
+              </div>
+              <span className="text-xs bg-gray-700 px-2 py-1 rounded">67</span>
+            </button>
+            
+            <button className="w-full flex items-center justify-between px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 mr-3 text-blue-500" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                New Models
+              </div>
+              <span className="text-xs bg-gray-700 px-2 py-1 rounded">234</span>
+            </button>
+            
+            <button className="w-full flex items-center justify-between px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg">
+              <div className="flex items-center">
+                <span className="w-5 h-5 mr-3 text-center">📱</span>
+                Mobile Streaming
+              </div>
+              <span className="text-xs bg-gray-700 px-2 py-1 rounded">98</span>
+            </button>
+          </div>
+        </div>
+      </nav>
+    </aside>
+  );
+};
+
+// Performer Card Component (Updated)
+export const PerformerCard = ({ performer, navigateTo, userType, isAuthenticated }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const handleWatchLive = () => {
+    if (!isAuthenticated) {
+      navigateTo('login');
+      return;
+    }
+    navigateTo('private-show');
+  };
+  
+  return (
+    <div 
+      className="relative bg-gray-800 rounded-lg overflow-hidden group cursor-pointer transition-transform hover:scale-105"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="relative aspect-w-16 aspect-h-9">
+        <img 
+          src={performer.image} 
+          alt={performer.name}
+          className="w-full h-48 object-cover"
+        />
+        
+        {/* Overlay indicators */}
+        <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+          {performer.hasTicketShow && (
+            <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">Private Show</span>
+          )}
+          {performer.isNew && (
+            <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded font-semibold">NEW</span>
+          )}
+        </div>
+        
+        <div className="absolute top-2 right-2 flex flex-col gap-1">
+          {performer.isHD && (
+            <span className="bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">HD</span>
+          )}
+          <div className="flex items-center bg-black bg-opacity-70 text-yellow-400 text-xs px-2 py-1 rounded">
+            <svg className="w-3 h-3 mr-1" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            {performer.rating}
+          </div>
+        </div>
+
+        <div className="absolute bottom-2 right-2">
+          <span className="text-white text-sm">{countryFlags[performer.country]}</span>
+        </div>
+        
+        {/* Live indicator */}
+        {performer.isLive && (
+          <div className="absolute bottom-2 left-2 flex items-center">
+            <div className="w-2 h-2 bg-red-500 rounded-full mr-1 animate-pulse"></div>
+            <span className="text-white text-xs font-semibold">LIVE</span>
+          </div>
+        )}
+        
+        {/* Hover overlay */}
+        {isHovered && (
+          <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+            <div className="text-center">
+              <button 
+                onClick={handleWatchLive}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-2 rounded-lg mb-2 font-semibold"
+              >
+                {isAuthenticated ? 'Watch Live' : 'Login to Watch'}
+              </button>
+              <div className="text-white text-sm">
+                {performer.viewers} viewers
+              </div>
+              <div className="text-green-400 text-xs mt-1">
+                20 tokens/min
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <div className="p-3">
+        <h3 className="text-white font-semibold text-sm truncate">{performer.name}</h3>
+        <div className="flex items-center justify-between mt-1">
+          <span className="text-gray-400 text-xs">{performer.viewers} viewers</span>
+          <div className="flex items-center space-x-1">
+            <button className="text-gray-400 hover:text-red-400">
+              <svg className="w-4 h-4" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </button>
+            <button className="text-gray-400 hover:text-yellow-400">
+              <svg className="w-4 h-4" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Section Component
+export const Section = ({ title, performers, showMore = true, navigateTo, userType, isAuthenticated }) => {
+  return (
+    <div className="mb-8">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center">
+          {title.includes('Kenyan') && <span className="text-2xl mr-2">🇰🇪</span>}
+          <h2 className="text-white text-xl font-semibold">{title}</h2>
+        </div>
+        {showMore && (
+          <button className="text-purple-400 hover:text-purple-300 font-semibold">
+            See All
+          </button>
+        )}
+      </div>
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        {performers.map(performer => (
+          <PerformerCard 
+            key={performer.id} 
+            performer={performer} 
+            navigateTo={navigateTo}
+            userType={userType}
+            isAuthenticated={isAuthenticated}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Navigation Tabs Component
+export const NavigationTabs = ({ activeTab, setActiveTab }) => {
+  const tabs = [
+    { id: 'girls', label: 'Girls', count: 2156 },
+    { id: 'couples', label: 'Couples', count: 342 },
+    { id: 'guys', label: 'Guys', count: 189 },
+    { id: 'trans', label: 'Trans', count: 67 }
+  ];
+  
+  return (
+    <div className="border-b border-gray-700 mb-6">
+      <nav className="flex space-x-8">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === tab.id
+                ? 'border-purple-500 text-purple-400'
+                : 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300'
+            }`}
+          >
+            {tab.label}
+            <span className="ml-2 text-xs">({tab.count})</span>
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
+};
+
+// Streaming Interface Component (Main Home Page)
+export const StreamingInterface = ({ activeTab, navigateTo, userType, isAuthenticated, onLogout }) => {
+  const [currentTab, setCurrentTab] = useState(activeTab);
+  const [userTokens] = useState(150); // Mock user tokens
+
+  return (
+    <>
+      <Header 
+        navigateTo={navigateTo} 
+        userType={userType} 
+        isAuthenticated={isAuthenticated} 
+        onLogout={onLogout}
+        userTokens={userTokens}
+      />
+      
+      <div className="flex min-h-screen">
+        <Sidebar />
+        
+        <main className="flex-1 p-6 pb-20">
+          <NavigationTabs activeTab={currentTab} setActiveTab={setCurrentTab} />
+          
+          {currentTab === 'girls' && (
+            <>
+              <Section 
+                title="🇰🇪 Kenyan Models" 
+                performers={mockPerformers.slice(0, 6)} 
+                navigateTo={navigateTo}
+                userType={userType}
+                isAuthenticated={isAuthenticated}
+              />
+              
+              <Section 
+                title="Top Rated Models" 
+                performers={mockPerformers.slice(2, 8)} 
+                navigateTo={navigateTo}
+                userType={userType}
+                isAuthenticated={isAuthenticated}
+              />
+              
+              <Section 
+                title="Mobile Streaming" 
+                performers={mockPerformers.slice(1, 7)} 
+                navigateTo={navigateTo}
+                userType={userType}
+                isAuthenticated={isAuthenticated}
+              />
+            </>
+          )}
+          
+          {currentTab === 'couples' && (
+            <>
+              <Section 
+                title="East African Couples" 
+                performers={mockCouples} 
+                navigateTo={navigateTo}
+                userType={userType}
+                isAuthenticated={isAuthenticated}
+              />
+              
+              <Section 
+                title="Top Couple Shows" 
+                performers={mockCouples.slice(0, 4)} 
+                navigateTo={navigateTo}
+                userType={userType}
+                isAuthenticated={isAuthenticated}
+              />
+            </>
+          )}
+          
+          {currentTab === 'guys' && (
+            <>
+              <Section 
+                title="Male Models" 
+                performers={mockPerformers.slice(3, 8).map(p => ({...p, name: p.name.replace('Queen', 'King')}))} 
+                navigateTo={navigateTo}
+                userType={userType}
+                isAuthenticated={isAuthenticated}
+              />
+            </>
+          )}
+          
+          {currentTab === 'trans' && (
+            <>
+              <Section 
+                title="Trans Models" 
+                performers={mockPerformers.slice(0, 5).map(p => ({...p, name: p.name + '_Trans'}))} 
+                navigateTo={navigateTo}
+                userType={userType}
+                isAuthenticated={isAuthenticated}
+              />
+            </>
+          )}
+        </main>
+      </div>
+      
+      <BottomCTA navigateTo={navigateTo} isAuthenticated={isAuthenticated} />
+    </>
+  );
+};
+
+// Bottom Call to Action Component (Updated)
+export const BottomCTA = ({ navigateTo, isAuthenticated }) => {
+  if (isAuthenticated) return null;
+  
+  return (
+    <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 z-40">
+      <div className="flex items-center justify-between max-w-6xl mx-auto">
+        <div className="flex items-center">
+          <div className="bg-white rounded-full p-2 mr-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-purple-600">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>
+            </svg>
+          </div>
+          <span className="font-semibold">Join QuantumStrip to interact with models!</span>
+        </div>
+        
+        <button 
+          onClick={() => navigateTo('register')}
+          className="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+        >
+          Join FREE
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Export all components and data
 export { mockPerformers, mockCouples, tokenPackages, countryFlags };
