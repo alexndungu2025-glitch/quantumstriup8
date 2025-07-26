@@ -130,6 +130,7 @@ const tokenPackages = [
 // Age Verification Modal Component (Updated for QuantumStrip)
 export const AgeVerificationModal = ({ isOpen, onClose, onConfirm }) => {
   const [selectedCategory, setSelectedCategory] = useState('girls');
+  const { t } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -140,6 +141,11 @@ export const AgeVerificationModal = ({ isOpen, onClose, onConfirm }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50">
       <div className="text-center text-white px-8">
+        {/* Language Switcher */}
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher variant="compact" />
+        </div>
+
         <div className="flex items-center justify-center mb-8">
           <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-3 rounded-full mr-3">
             <svg width="32" height="32" fill="currentColor" viewBox="0 0 24 24">
@@ -147,14 +153,14 @@ export const AgeVerificationModal = ({ isOpen, onClose, onConfirm }) => {
             </svg>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            QUANTUMSTRIP
+            {t('age_verification.title')}
           </h1>
         </div>
         
-        <p className="text-lg mb-2">Welcome to Kenya's Premier Live Entertainment Platform</p>
-        <p className="text-lg mb-8">Join our community & start interacting now for FREE.</p>
+        <p className="text-lg mb-2">{t('age_verification.welcome')}</p>
+        <p className="text-lg mb-8">{t('age_verification.join_community')}</p>
         
-        <p className="text-white mb-6">I'm interested in:</p>
+        <p className="text-white mb-6">{t('age_verification.interested_in')}</p>
         
         <div className="flex justify-center gap-4 mb-8">
           <button
@@ -166,7 +172,7 @@ export const AgeVerificationModal = ({ isOpen, onClose, onConfirm }) => {
             }`}
           >
             <div className="text-2xl mb-1">♀</div>
-            <div>GIRLS</div>
+            <div>{t('age_verification.girls')}</div>
           </button>
           
           <button
@@ -178,7 +184,7 @@ export const AgeVerificationModal = ({ isOpen, onClose, onConfirm }) => {
             }`}
           >
             <div className="text-2xl mb-1">♂</div>
-            <div>GUYS</div>
+            <div>{t('age_verification.guys')}</div>
           </button>
           
           <button
@@ -190,7 +196,7 @@ export const AgeVerificationModal = ({ isOpen, onClose, onConfirm }) => {
             }`}
           >
             <div className="text-2xl mb-1">💕</div>
-            <div>COUPLES</div>
+            <div>{t('age_verification.couples')}</div>
           </button>
         </div>
         
@@ -198,13 +204,12 @@ export const AgeVerificationModal = ({ isOpen, onClose, onConfirm }) => {
           onClick={handleConfirm}
           className="bg-green-600 hover:bg-green-700 text-white px-12 py-3 rounded-full text-lg font-semibold transition-colors mb-6"
         >
-          I'm Over 18
+          {t('age_verification.over_18')}
         </button>
         
         <div className="text-xs text-gray-400 max-w-2xl mx-auto">
           <p className="mb-2">
-            By entering QuantumStrip, you confirm you're over 18 years old and agree to our Terms of Service.
-            All models are 18+ years old. This site is for adults only.
+            {t('age_verification.terms_text')}
           </p>
         </div>
         
@@ -212,7 +217,7 @@ export const AgeVerificationModal = ({ isOpen, onClose, onConfirm }) => {
           onClick={onClose}
           className="mt-6 text-gray-400 hover:text-white underline"
         >
-          Exit Here
+          {t('age_verification.exit_here')}
         </button>
       </div>
     </div>
