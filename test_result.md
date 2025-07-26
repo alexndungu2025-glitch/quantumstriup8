@@ -212,11 +212,7 @@
   run_ui: false
 
 ## test_plan:
-  current_focus:
-    - "Phase 2: Token System & M-Pesa Integration"
-    - "Model Earnings & Withdrawal System"  
-    - "Admin Panel & System Settings"
-    - "Live Streaming & WebRTC Infrastructure"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
