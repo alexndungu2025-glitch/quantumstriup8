@@ -160,7 +160,7 @@ async def create_test_users():
                 age=22,
                 country="ke"
             )
-            await users_collection.insert_one(test_model.dict(by_alias=True))
+            await users_collection.insert_one(test_model.model_dump(by_alias=True))
             logger.info("Test model created: model@test.com / password123")
             
     except Exception as e:
