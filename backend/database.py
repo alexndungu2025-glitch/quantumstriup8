@@ -1,47 +1,26 @@
-from sqlalchemy import create_engine, MetaData
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-import os
+from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
-# MySQL Database Configuration
-MYSQL_HOST = os.getenv("MYSQL_HOST", "localhost")
-MYSQL_PORT = os.getenv("MYSQL_PORT", "3306")
-MYSQL_USER = os.getenv("MYSQL_USER", "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "")
-MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "quantumstrip")
+# MongoDB Configuration
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+DB_NAME = os.environ.get('DB_NAME', 'quantumstrip')
 
-# Create MySQL URL
-DATABASE_URL = f"mysql+mysqlconnector://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
+# MongoDB client and database
+client = AsyncIOMotorClient(MONGO_URL)
+database = client[DB_NAME]
 
-# Create SQLAlchemy engine
-engine = create_engine(
-    DATABASE_URL,
-    echo=True,  # Set to False in production
-    pool_pre_ping=True,
-    pool_recycle=300
-)
+# Collections
+users_collection = database.users
+viewer_profiles_collection = database.viewer_profiles
+model_profiles_collection = database.model_profiles
+transactions_collection = database.transactions
+withdrawals_collection = database.withdrawals
+private_shows_collection = database.private_shows
+system_settings_collection = database.system_settings
 
-# Create SessionLocal class
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Create Base class for models
-Base = declarative_base()
-
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-# Create database tables
-def create_tables():
-    Base.metadata.create_all(bind=engine)
-
-# Drop all tables (for development)
-def drop_tables():
-    Base.metadata.drop_all(bind=engine)
+async def close_mongo_connection():
+    """Close MongoDB connection"""
+    client.close()
