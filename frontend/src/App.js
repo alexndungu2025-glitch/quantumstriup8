@@ -151,13 +151,15 @@ const AgeVerificationWrapper = ({ children }) => {
 function App() {
   return (
     <div className="App min-h-screen bg-black">
-      <AuthProvider>
-        <Router>
-          <AgeVerificationWrapper>
-            <AppRoutes />
-          </AgeVerificationWrapper>
-        </Router>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <Router>
+            <AgeVerificationWrapper>
+              <AppRoutes />
+            </AgeVerificationWrapper>
+          </Router>
+        </AuthProvider>
+      </LanguageProvider>
     </div>
   );
 }
