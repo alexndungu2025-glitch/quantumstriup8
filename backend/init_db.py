@@ -160,7 +160,15 @@ async def create_test_users():
                 age=22,
                 country="ke"
             )
-            await users_collection.insert_one(test_model.model_dump(by_alias=True))
+            result = await users_collection.insert_one(test_model.model_dump(by_alias=True))
+            
+            # Create model profile
+            from models import ModelProfile
+            model_profile = ModelProfile(
+                user_id=result.inserted_id,
+                display_name="testmodel"
+            )
+            await model_profiles_collection.insert_one(model_profile.model_dump(by_alias=True))
             logger.info("Test model created: model@test.com / password123")
             
     except Exception as e:
