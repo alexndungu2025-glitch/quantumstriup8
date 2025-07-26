@@ -197,7 +197,7 @@ class QuantumStripTester:
 
         # Test duplicate username registration
         duplicate_username_data = {
-            "username": "testviewer2024",  # Same username
+            "username": f"testviewer{timestamp}",  # Same username
             "email": "different@example.com",  # Different email
             "phone": "254712345680",
             "password": "securepass123",
