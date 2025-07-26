@@ -6,7 +6,7 @@ from database import (
     system_settings_collection,
     client
 )
-from models import User, UserRole, ViewerProfile, SystemSettings
+from models import User, UserRole, ViewerProfile, ModelProfile, SystemSettings
 from auth import hash_password
 import logging
 from datetime import datetime
