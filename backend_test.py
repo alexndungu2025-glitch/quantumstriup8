@@ -584,14 +584,14 @@ class QuantumStripTester:
         """Run all test suites"""
         print(f"{Colors.BOLD}{Colors.BLUE}")
         print("=" * 80)
-        print("QUANTUMSTRIP BACKEND AUTHENTICATION SYSTEM TEST SUITE")
+        print("QUANTUMSTRIP BACKEND COMPLETE SYSTEM TEST SUITE")
         print("=" * 80)
         print(f"{Colors.ENDC}")
         
         print_info(f"Testing backend at: {API_BASE}")
         print_info(f"Test started at: {datetime.now().isoformat()}")
         
-        # Run all test suites
+        # Run all test suites in order
         self.test_basic_api_health()
         self.test_user_registration()
         self.test_user_login()
@@ -601,8 +601,541 @@ class QuantumStripTester:
         self.test_password_hashing()
         self.test_jwt_token_functionality()
         
+        # Phase 2 Tests
+        self.test_token_system()
+        self.test_model_system()
+        self.test_admin_system()
+        self.test_streaming_system()
+        
         # Print final results
         self.print_final_results()
+
+    def test_token_system(self):
+        """Test complete token system including M-Pesa integration"""
+        print_test_header("Token System & M-Pesa Integration")
+        
+        # Test token packages endpoint
+        try:
+            response = self.session.get(f"{API_BASE}/tokens/packages")
+            self.assert_test(
+                response.status_code == 200,
+                f"Token packages endpoint accessible: {response.status_code}",
+                f"Token packages endpoint failed: {response.status_code} - {response.text}"
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.assert_test(
+                    "packages" in data and len(data["packages"]) > 0,
+                    "Token packages returned with valid data",
+                    "Token packages endpoint doesn't return valid packages"
+                )
+                print_info(f"Available packages: {data['packages']}")
+                
+        except Exception as e:
+            self.assert_test(False, "", f"Token packages test error: {str(e)}")
+
+        # Test token balance endpoint (requires authentication)
+        if 'test_viewer' in self.tokens:
+            headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+            try:
+                response = self.session.get(f"{API_BASE}/tokens/balance", headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Token balance endpoint accessible: {response.status_code}",
+                    f"Token balance endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        "token_balance" in data and "total_spent" in data,
+                        "Token balance returns expected data structure",
+                        "Token balance doesn't return expected data structure"
+                    )
+                    print_info(f"User token balance: {data.get('token_balance', 0)}")
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Token balance test error: {str(e)}")
+
+        # Test transaction history endpoint
+        if 'test_viewer' in self.tokens:
+            headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+            try:
+                response = self.session.get(f"{API_BASE}/tokens/transactions", headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Transaction history endpoint accessible: {response.status_code}",
+                    f"Transaction history endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        isinstance(data, list),
+                        "Transaction history returns list format",
+                        "Transaction history doesn't return list format"
+                    )
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Transaction history test error: {str(e)}")
+
+        # Test token purchase endpoint (without actually calling M-Pesa)
+        if 'test_viewer' in self.tokens:
+            headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+            purchase_data = {
+                "tokens": 50,
+                "phone_number": "254712345678"
+            }
+            
+            try:
+                response = self.session.post(f"{API_BASE}/tokens/purchase", json=purchase_data, headers=headers)
+                # This might fail due to M-Pesa integration, but we test the endpoint structure
+                self.assert_test(
+                    response.status_code in [200, 400, 500],  # Accept various responses
+                    f"Token purchase endpoint responds: {response.status_code}",
+                    f"Token purchase endpoint completely inaccessible: {response.status_code}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        "success" in data and "message" in data,
+                        "Token purchase returns expected response structure",
+                        "Token purchase doesn't return expected response structure"
+                    )
+                elif response.status_code == 400:
+                    print_info("Token purchase validation working (400 response expected for test data)")
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Token purchase test error: {str(e)}")
+
+        # Test M-Pesa callback endpoint (public endpoint)
+        callback_data = {
+            "Body": {
+                "stkCallback": {
+                    "MerchantRequestID": "test-merchant-id",
+                    "CheckoutRequestID": "test-checkout-id",
+                    "ResultCode": 0,
+                    "ResultDesc": "Test callback"
+                }
+            }
+        }
+        
+        try:
+            response = self.session.post(f"{API_BASE}/tokens/mpesa/callback", json=callback_data)
+            self.assert_test(
+                response.status_code in [200, 400],  # Accept both success and validation errors
+                f"M-Pesa callback endpoint responds: {response.status_code}",
+                f"M-Pesa callback endpoint failed: {response.status_code} - {response.text}"
+            )
+            
+        except Exception as e:
+            self.assert_test(False, "", f"M-Pesa callback test error: {str(e)}")
+
+    def test_model_system(self):
+        """Test model earnings and withdrawal system"""
+        print_test_header("Model Earnings & Withdrawal System")
+        
+        # Test model earnings endpoint
+        if 'test_model' in self.tokens:
+            headers = {"Authorization": f"Bearer {self.tokens['test_model']}"}
+            try:
+                response = self.session.get(f"{API_BASE}/models/earnings", headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Model earnings endpoint accessible: {response.status_code}",
+                    f"Model earnings endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    expected_fields = ["total_earnings", "available_balance", "pending_withdrawals", "total_withdrawn", "revenue_share_percentage"]
+                    self.assert_test(
+                        all(field in data for field in expected_fields),
+                        "Model earnings returns all expected fields",
+                        f"Model earnings missing fields. Got: {list(data.keys())}"
+                    )
+                    print_info(f"Model earnings: {data.get('total_earnings', 0)}, Available: {data.get('available_balance', 0)}")
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Model earnings test error: {str(e)}")
+
+        # Test withdrawal history endpoint
+        if 'test_model' in self.tokens:
+            headers = {"Authorization": f"Bearer {self.tokens['test_model']}"}
+            try:
+                response = self.session.get(f"{API_BASE}/models/withdrawals", headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Withdrawal history endpoint accessible: {response.status_code}",
+                    f"Withdrawal history endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        isinstance(data, list),
+                        "Withdrawal history returns list format",
+                        "Withdrawal history doesn't return list format"
+                    )
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Withdrawal history test error: {str(e)}")
+
+        # Test tipping functionality (requires both viewer and model tokens)
+        if 'test_viewer' in self.tokens and 'test_model' in self.tokens:
+            # First get model ID from model profile
+            model_headers = {"Authorization": f"Bearer {self.tokens['test_model']}"}
+            try:
+                model_response = self.session.get(f"{API_BASE}/auth/model/dashboard", headers=model_headers)
+                if model_response.status_code == 200:
+                    model_data = model_response.json()
+                    model_id = model_data.get('profile', {}).get('id')
+                    
+                    if model_id:
+                        # Test tip endpoint
+                        viewer_headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+                        tip_data = {
+                            "model_id": model_id,
+                            "tokens": 1,  # Small tip amount
+                            "message": "Test tip"
+                        }
+                        
+                        tip_response = self.session.post(f"{API_BASE}/models/tip", json=tip_data, headers=viewer_headers)
+                        self.assert_test(
+                            tip_response.status_code in [200, 400],  # May fail due to insufficient tokens
+                            f"Tip endpoint responds: {tip_response.status_code}",
+                            f"Tip endpoint completely inaccessible: {tip_response.status_code}"
+                        )
+                        
+                        if tip_response.status_code == 200:
+                            tip_result = tip_response.json()
+                            self.assert_test(
+                                "success" in tip_result and "message" in tip_result,
+                                "Tip endpoint returns expected response structure",
+                                "Tip endpoint doesn't return expected response structure"
+                            )
+                        elif tip_response.status_code == 400:
+                            print_info("Tip validation working (insufficient tokens expected)")
+                            
+            except Exception as e:
+                self.assert_test(False, "", f"Tipping test error: {str(e)}")
+
+        # Test withdrawal request (will likely fail due to insufficient balance)
+        if 'test_model' in self.tokens:
+            headers = {"Authorization": f"Bearer {self.tokens['test_model']}"}
+            withdrawal_data = {
+                "amount": 20000,  # Minimum withdrawal amount
+                "phone_number": "254712345678"
+            }
+            
+            try:
+                response = self.session.post(f"{API_BASE}/models/withdraw", json=withdrawal_data, headers=headers)
+                self.assert_test(
+                    response.status_code in [200, 400],  # May fail due to insufficient balance
+                    f"Withdrawal request endpoint responds: {response.status_code}",
+                    f"Withdrawal request endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 400:
+                    print_info("Withdrawal validation working (insufficient balance expected)")
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Withdrawal request test error: {str(e)}")
+
+    def test_admin_system(self):
+        """Test admin panel and system settings"""
+        print_test_header("Admin Panel & System Settings")
+        
+        # Create admin user for testing
+        admin_data = {
+            "username": f"testadmin{int(time.time())}",
+            "email": f"testadmin{int(time.time())}@example.com",
+            "phone": "254712345680",
+            "password": "securepass123",
+            "role": "admin",
+            "age": 30,
+            "country": "ke"
+        }
+        
+        admin_token = None
+        try:
+            response = self.session.post(f"{API_BASE}/auth/register", json=admin_data)
+            if response.status_code == 200:
+                data = response.json()
+                admin_token = data.get("access_token")
+                print_info("Admin user created for testing")
+        except Exception as e:
+            print_warning(f"Could not create admin user: {e}")
+
+        if admin_token:
+            headers = {"Authorization": f"Bearer {admin_token}"}
+            
+            # Test platform statistics
+            try:
+                response = self.session.get(f"{API_BASE}/admin/stats", headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Admin stats endpoint accessible: {response.status_code}",
+                    f"Admin stats endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    expected_fields = ["total_users", "total_models", "total_viewers", "platform_revenue"]
+                    self.assert_test(
+                        all(field in data for field in expected_fields),
+                        "Admin stats returns all expected fields",
+                        f"Admin stats missing fields. Got: {list(data.keys())}"
+                    )
+                    print_info(f"Platform stats - Users: {data.get('total_users', 0)}, Revenue: {data.get('platform_revenue', 0)}")
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Admin stats test error: {str(e)}")
+
+            # Test user management
+            try:
+                response = self.session.get(f"{API_BASE}/admin/users", headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Admin users endpoint accessible: {response.status_code}",
+                    f"Admin users endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        isinstance(data, list),
+                        "Admin users returns list format",
+                        "Admin users doesn't return list format"
+                    )
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Admin users test error: {str(e)}")
+
+            # Test system settings
+            try:
+                response = self.session.get(f"{API_BASE}/admin/settings", headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Admin settings endpoint accessible: {response.status_code}",
+                    f"Admin settings endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        isinstance(data, list),
+                        "Admin settings returns list format",
+                        "Admin settings doesn't return list format"
+                    )
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Admin settings test error: {str(e)}")
+
+            # Test creating a system setting
+            setting_data = {
+                "key": "test_setting",
+                "value": "test_value",
+                "description": "Test setting for API testing"
+            }
+            
+            try:
+                response = self.session.post(f"{API_BASE}/admin/settings", json=setting_data, headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Admin create setting successful: {response.status_code}",
+                    f"Admin create setting failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        data.get("key") == "test_setting" and data.get("value") == "test_value",
+                        "Admin setting created with correct data",
+                        "Admin setting not created with correct data"
+                    )
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Admin create setting test error: {str(e)}")
+
+            # Test withdrawal management
+            try:
+                response = self.session.get(f"{API_BASE}/admin/withdrawals", headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Admin withdrawals endpoint accessible: {response.status_code}",
+                    f"Admin withdrawals endpoint failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        isinstance(data, list),
+                        "Admin withdrawals returns list format",
+                        "Admin withdrawals doesn't return list format"
+                    )
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Admin withdrawals test error: {str(e)}")
+
+        else:
+            print_warning("Skipping admin tests - could not create admin user")
+
+    def test_streaming_system(self):
+        """Test live streaming and WebRTC infrastructure"""
+        print_test_header("Live Streaming & WebRTC Infrastructure")
+        
+        # Test live models endpoint (public)
+        try:
+            response = self.session.get(f"{API_BASE}/streaming/models/live")
+            self.assert_test(
+                response.status_code == 200,
+                f"Live models endpoint accessible: {response.status_code}",
+                f"Live models endpoint failed: {response.status_code} - {response.text}"
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                self.assert_test(
+                    isinstance(data, list),
+                    "Live models returns list format",
+                    "Live models doesn't return list format"
+                )
+                print_info(f"Found {len(data)} live models")
+                
+        except Exception as e:
+            self.assert_test(False, "", f"Live models test error: {str(e)}")
+
+        # Test model status update
+        if 'test_model' in self.tokens:
+            headers = {"Authorization": f"Bearer {self.tokens['test_model']}"}
+            status_data = {
+                "is_live": True,
+                "is_available": True
+            }
+            
+            try:
+                response = self.session.patch(f"{API_BASE}/streaming/models/status", params=status_data, headers=headers)
+                self.assert_test(
+                    response.status_code == 200,
+                    f"Model status update successful: {response.status_code}",
+                    f"Model status update failed: {response.status_code} - {response.text}"
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    self.assert_test(
+                        "success" in data and data.get("success") == True,
+                        "Model status update returns success",
+                        "Model status update doesn't return success"
+                    )
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"Model status update test error: {str(e)}")
+
+        # Test streaming session creation
+        if 'test_viewer' in self.tokens and 'test_model' in self.tokens:
+            # First get model ID
+            model_headers = {"Authorization": f"Bearer {self.tokens['test_model']}"}
+            try:
+                model_response = self.session.get(f"{API_BASE}/auth/model/dashboard", headers=model_headers)
+                if model_response.status_code == 200:
+                    model_data = model_response.json()
+                    model_id = model_data.get('profile', {}).get('id')
+                    
+                    if model_id:
+                        # Test streaming session creation
+                        viewer_headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+                        session_data = {
+                            "model_id": model_id,
+                            "session_type": "public"
+                        }
+                        
+                        session_response = self.session.post(f"{API_BASE}/streaming/session", json=session_data, headers=viewer_headers)
+                        self.assert_test(
+                            session_response.status_code in [200, 400],  # May fail if model not available
+                            f"Streaming session endpoint responds: {session_response.status_code}",
+                            f"Streaming session endpoint failed: {session_response.status_code}"
+                        )
+                        
+                        if session_response.status_code == 200:
+                            session_result = session_response.json()
+                            self.assert_test(
+                                "session_id" in session_result and "webrtc_config" in session_result,
+                                "Streaming session returns expected data",
+                                "Streaming session doesn't return expected data"
+                            )
+                            print_info(f"Streaming session created: {session_result.get('session_id')}")
+                        elif session_response.status_code == 400:
+                            print_info("Streaming session validation working (model unavailable expected)")
+                            
+            except Exception as e:
+                self.assert_test(False, "", f"Streaming session test error: {str(e)}")
+
+        # Test private show request
+        if 'test_viewer' in self.tokens and 'test_model' in self.tokens:
+            # Get model ID again
+            model_headers = {"Authorization": f"Bearer {self.tokens['test_model']}"}
+            try:
+                model_response = self.session.get(f"{API_BASE}/auth/model/dashboard", headers=model_headers)
+                if model_response.status_code == 200:
+                    model_data = model_response.json()
+                    model_id = model_data.get('profile', {}).get('id')
+                    
+                    if model_id:
+                        # Test private show request
+                        viewer_headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+                        show_data = {
+                            "model_id": model_id,
+                            "duration_minutes": 5
+                        }
+                        
+                        show_response = self.session.post(f"{API_BASE}/streaming/private-show", json=show_data, headers=viewer_headers)
+                        self.assert_test(
+                            show_response.status_code in [200, 400],  # May fail due to insufficient tokens
+                            f"Private show request endpoint responds: {show_response.status_code}",
+                            f"Private show request endpoint failed: {show_response.status_code}"
+                        )
+                        
+                        if show_response.status_code == 200:
+                            show_result = show_response.json()
+                            self.assert_test(
+                                "show_id" in show_result and "rate_per_minute" in show_result,
+                                "Private show request returns expected data",
+                                "Private show request doesn't return expected data"
+                            )
+                            print_info(f"Private show requested: {show_result.get('show_id')}")
+                        elif show_response.status_code == 400:
+                            print_info("Private show validation working (insufficient tokens expected)")
+                            
+            except Exception as e:
+                self.assert_test(False, "", f"Private show test error: {str(e)}")
+
+        # Test WebRTC signaling endpoint
+        if 'test_viewer' in self.tokens:
+            headers = {"Authorization": f"Bearer {self.tokens['test_viewer']}"}
+            signal_data = {
+                "session_id": "test-session-id",
+                "signal_type": "offer",
+                "signal_data": {"type": "offer", "sdp": "test-sdp"},
+                "target_user_id": "test-target-id"
+            }
+            
+            try:
+                response = self.session.post(f"{API_BASE}/streaming/webrtc/signal", json=signal_data, headers=headers)
+                self.assert_test(
+                    response.status_code in [200, 404],  # May fail if session doesn't exist
+                    f"WebRTC signaling endpoint responds: {response.status_code}",
+                    f"WebRTC signaling endpoint failed: {response.status_code}"
+                )
+                
+                if response.status_code == 404:
+                    print_info("WebRTC signaling validation working (session not found expected)")
+                    
+            except Exception as e:
+                self.assert_test(False, "", f"WebRTC signaling test error: {str(e)}")
 
     def print_final_results(self):
         """Print final test results"""
