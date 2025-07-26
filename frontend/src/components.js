@@ -615,14 +615,44 @@ export const RegisterPage = () => {
 };
 
 // Header Component (Updated for QuantumStrip)
-export const Header = ({ navigateTo, userType, isAuthenticated, onLogout, userTokens = 0 }) => {
+export const Header = ({ userType, isAuthenticated, onLogout, userTokens = 0 }) => {
+  const navigate = useNavigate();
+  
+  const navigateTo = (path) => {
+    switch(path) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'token-purchase':
+        navigate('/token-purchase');
+        break;
+      case 'admin-dashboard':
+        navigate('/admin-dashboard');
+        break;
+      case 'model-dashboard':
+        navigate('/model-dashboard');
+        break;
+      case 'viewer-dashboard':
+        navigate('/viewer-dashboard');
+        break;
+      case 'register':
+        navigate('/register');
+        break;
+      case 'login':
+        navigate('/login');
+        break;
+      default:
+        navigate('/');
+    }
+  };
+
   return (
     <header className="bg-gray-900 border-b border-gray-700 px-4 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <button className="text-white mr-4 hover:text-purple-400">
-            <svg width="24" height="24" fill="currentColor">
-              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          <button className="lg:hidden text-gray-300 hover:text-white mr-4">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
           
@@ -632,44 +662,28 @@ export const Header = ({ navigateTo, userType, isAuthenticated, onLogout, userTo
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
               </svg>
             </div>
-            <h1 className="text-white text-xl font-bold">QUANTUMSTRIP</h1>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              QUANTUMSTRIP
+            </h1>
           </div>
-          
-          <div className="flex items-center ml-6 text-green-400">
-            <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></div>
-            <span className="font-semibold">2,847 LIVE</span>
-          </div>
-          
-          <button className="flex items-center ml-6 text-yellow-400 hover:text-yellow-300">
-            <svg width="16" height="16" className="mr-1" fill="currentColor">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-            </svg>
-            <span>Top Models</span>
-          </button>
         </div>
         
         <div className="flex items-center">
-          <div className="relative mr-4">
-            <input
-              type="text"
-              placeholder="Search models, categories..."
-              className="bg-gray-800 text-white pl-10 pr-4 py-2 rounded-lg border border-gray-700 focus:border-purple-500 focus:outline-none w-80"
-            />
-            <svg className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="currentColor">
-              <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
+          {/* Language Switcher */}
+          <div className="mr-4">
+            <LanguageSwitcher variant="compact" />
           </div>
           
           {isAuthenticated ? (
-            <>
+            <div className="flex items-center">
               {userType === 'viewer' && (
                 <div className="flex items-center mr-4">
                   <button
                     onClick={() => navigateTo('token-purchase')}
                     className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg mr-2 flex items-center hover:from-green-700 hover:to-green-800"
                   >
-                    <svg className="w-4 h-4 mr-2" fill="currentColor">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" className="mr-1">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                     </svg>
                     {userTokens} Tokens
                   </button>
@@ -690,21 +704,20 @@ export const Header = ({ navigateTo, userType, isAuthenticated, onLogout, userTo
               >
                 Logout
               </button>
-            </>
+            </div>
           ) : (
             <>
               <button
                 onClick={() => navigateTo('register')}
                 className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg mr-2 border border-gray-600"
               >
-                Create Free Account
+                Sign Up
               </button>
-              
               <button
                 onClick={() => navigateTo('login')}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700"
               >
-                Log In
+                Sign In
               </button>
             </>
           )}
