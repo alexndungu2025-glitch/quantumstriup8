@@ -2,103 +2,116 @@ import React, { useState } from 'react';
 import './App.css';
 import {
   AgeVerificationModal,
-  Header,
-  Sidebar,
-  Section,
-  NavigationTabs,
-  BottomCTA,
+  LoginPage,
+  RegisterPage,
+  ViewerDashboard,
+  ModelDashboard,
+  AdminDashboard,
+  StreamingInterface,
+  TokenPurchasePage,
+  PrivateShowInterface,
   mockPerformers,
   mockCouples
 } from './components';
 
 function App() {
-  const [showAgeVerification, setShowAgeVerification] = useState(true);
+  const [currentPage, setCurrentPage] = useState('age-verification');
+  const [userType, setUserType] = useState(null); // 'viewer', 'model', 'admin'
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('girls');
-  const [activeTab, setActiveTab] = useState('girls');
 
   const handleAgeVerificationConfirm = (category) => {
     setSelectedCategory(category);
-    setShowAgeVerification(false);
+    setCurrentPage('home');
   };
 
   const handleAgeVerificationClose = () => {
-    // In a real app, this would redirect away from the site
-    setShowAgeVerification(false);
+    setCurrentPage('home');
+  };
+
+  const handleLogin = (type) => {
+    setUserType(type);
+    setIsAuthenticated(true);
+    setCurrentPage(type === 'admin' ? 'admin-dashboard' : 
+                  type === 'model' ? 'model-dashboard' : 'viewer-dashboard');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setUserType(null);
+    setCurrentPage('home');
+  };
+
+  const navigateTo = (page) => {
+    setCurrentPage(page);
   };
 
   return (
     <div className="App min-h-screen bg-black">
-      <AgeVerificationModal 
-        isOpen={showAgeVerification}
-        onClose={handleAgeVerificationClose}
-        onConfirm={handleAgeVerificationConfirm}
-      />
+      {currentPage === 'age-verification' && (
+        <AgeVerificationModal 
+          isOpen={true}
+          onClose={handleAgeVerificationClose}
+          onConfirm={handleAgeVerificationConfirm}
+        />
+      )}
       
-      {!showAgeVerification && (
-        <>
-          <Header />
-          
-          <div className="flex">
-            <Sidebar />
-            
-            <main className="flex-1 p-6 pb-20">
-              <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-              
-              {activeTab === 'girls' && (
-                <>
-                  <Section 
-                    title="🇺🇸 American Sex Cams" 
-                    performers={mockPerformers.slice(0, 6)} 
-                  />
-                  
-                  <Section 
-                    title="Top Free Live Sex Cams" 
-                    performers={mockPerformers.slice(2, 8)} 
-                  />
-                  
-                  <Section 
-                    title="Mobile Live Sex Cams" 
-                    performers={mockPerformers.slice(1, 7)} 
-                  />
-                </>
-              )}
-              
-              {activeTab === 'couples' && (
-                <>
-                  <Section 
-                    title="Couples Live Sex Cams" 
-                    performers={mockCouples} 
-                  />
-                  
-                  <Section 
-                    title="Top Couples Cams" 
-                    performers={mockCouples.slice(1, 5)} 
-                  />
-                </>
-              )}
-              
-              {activeTab === 'guys' && (
-                <>
-                  <Section 
-                    title="Guys Live Sex Cams" 
-                    performers={mockPerformers.slice(3, 8).map(p => ({...p, name: p.name.replace('girl', 'guy')}))} 
-                  />
-                </>
-              )}
-              
-              {activeTab === 'trans' && (
-                <>
-                  <Section 
-                    title="Trans Live Sex Cams" 
-                    performers={mockPerformers.slice(0, 5).map(p => ({...p, name: p.name + '_Trans'}))} 
-                  />
-                </>
-              )}
-            </main>
-          </div>
-          
-          <BottomCTA />
-        </>
+      {currentPage === 'home' && (
+        <StreamingInterface 
+          activeTab={selectedCategory}
+          navigateTo={navigateTo}
+          userType={userType}
+          isAuthenticated={isAuthenticated}
+          onLogout={handleLogout}
+        />
+      )}
+      
+      {currentPage === 'login' && (
+        <LoginPage 
+          onLogin={handleLogin}
+          navigateTo={navigateTo}
+        />
+      )}
+      
+      {currentPage === 'register' && (
+        <RegisterPage 
+          navigateTo={navigateTo}
+        />
+      )}
+      
+      {currentPage === 'viewer-dashboard' && (
+        <ViewerDashboard 
+          navigateTo={navigateTo}
+          onLogout={handleLogout}
+        />
+      )}
+      
+      {currentPage === 'model-dashboard' && (
+        <ModelDashboard 
+          navigateTo={navigateTo}
+          onLogout={handleLogout}
+        />
+      )}
+      
+      {currentPage === 'admin-dashboard' && (
+        <AdminDashboard 
+          navigateTo={navigateTo}
+          onLogout={handleLogout}
+        />
+      )}
+      
+      {currentPage === 'token-purchase' && (
+        <TokenPurchasePage 
+          navigateTo={navigateTo}
+          userType={userType}
+        />
+      )}
+      
+      {currentPage === 'private-show' && (
+        <PrivateShowInterface 
+          navigateTo={navigateTo}
+          userType={userType}
+        />
       )}
     </div>
   );
