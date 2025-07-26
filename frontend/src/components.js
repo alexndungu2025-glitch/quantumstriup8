@@ -1358,5 +1358,529 @@ export const ViewerDashboard = ({ navigateTo, onLogout }) => {
   );
 };
 
+// Model Dashboard Component
+export const ModelDashboard = ({ navigateTo, onLogout }) => {
+  const [modelStats] = useState({
+    tokensEarned: 45600,
+    keshBalance: 22800, // 50% of tokens earned
+    withdrawableAmount: 22800,
+    totalViewers: 15430,
+    rating: 4.8,
+    liveHours: 156
+  });
+
+  const [recentEarnings] = useState([
+    { id: 1, date: '2024-01-15', tokens: 1200, amount: 600, type: 'Private Show' },
+    { id: 2, date: '2024-01-15', tokens: 800, amount: 400, type: 'Tips' },
+    { id: 3, date: '2024-01-14', tokens: 2100, amount: 1050, type: 'Private Show' },
+  ]);
+
+  const handleWithdrawRequest = () => {
+    if (modelStats.keshBalance < 20000) {
+      alert(`Minimum withdrawal amount is KES 20,000. You currently have KES ${modelStats.keshBalance.toLocaleString()}`);
+      return;
+    }
+    alert('Withdrawal request submitted! Your earnings will be sent to your M-Pesa within 24 hours.');
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-pink-900 via-gray-900 to-black">
+      <Header 
+        navigateTo={navigateTo} 
+        userType="model" 
+        isAuthenticated={true}
+        onLogout={onLogout}
+      />
+      
+      <div className="max-w-6xl mx-auto p-6 pt-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Model Dashboard</h1>
+          <div className="flex space-x-4">
+            <button
+              onClick={() => navigateTo('private-show')}
+              className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800"
+            >
+              Go Live
+            </button>
+            <button
+              onClick={handleWithdrawRequest}
+              className="bg-gradient-to-r from-pink-600 to-pink-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-pink-700 hover:to-pink-800"
+            >
+              Withdraw Earnings
+            </button>
+          </div>
+        </div>
+        
+        {/* Stats Cards */}
+        <div className="grid md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-green-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{modelStats.tokensEarned.toLocaleString()}</p>
+                <p className="text-gray-400 text-sm">Total Tokens Earned</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-pink-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7.5V4.5C15 3.1 13.9 2 12.5 2S10 3.1 10 4.5V7.5L4 7V9L10 8.5V15L8 16V21H10V17L12 15.5L14 17V21H16V16L14 15V8.5L21 9Z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">KES {modelStats.keshBalance.toLocaleString()}</p>
+                <p className="text-gray-400 text-sm">Available Balance</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-blue-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{modelStats.totalViewers.toLocaleString()}</p>
+                <p className="text-gray-400 text-sm">Total Viewers</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-yellow-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{modelStats.rating}</p>
+                <p className="text-gray-400 text-sm">Rating</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Earnings Overview */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">Recent Earnings</h2>
+            <div className="space-y-4">
+              {recentEarnings.map((earning) => (
+                <div key={earning.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                  <div>
+                    <h3 className="text-white font-semibold">{earning.type}</h3>
+                    <p className="text-gray-400 text-sm">
+                      {new Date(earning.date).toLocaleDateString()} • {earning.tokens} tokens
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-green-400 font-semibold">KES {earning.amount}</p>
+                    <p className="text-xs text-gray-400">Your share (50%)</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* Withdrawal Information */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">Withdrawal Info</h2>
+            
+            <div className="space-y-4">
+              <div className="p-4 bg-green-900/30 rounded-lg border border-green-700">
+                <h3 className="text-green-300 font-semibold mb-2">Available for Withdrawal</h3>
+                <p className="text-2xl font-bold text-white">KES {modelStats.withdrawableAmount.toLocaleString()}</p>
+                <p className="text-sm text-gray-400 mt-1">
+                  {modelStats.withdrawableAmount >= 20000 
+                    ? 'Ready to withdraw' 
+                    : `Need KES ${(20000 - modelStats.withdrawableAmount).toLocaleString()} more for minimum withdrawal`
+                  }
+                </p>
+              </div>
+              
+              <div className="p-4 bg-blue-900/30 rounded-lg border border-blue-700">
+                <h4 className="text-blue-300 font-semibold mb-2">Withdrawal Details</h4>
+                <ul className="text-sm text-gray-300 space-y-1">
+                  <li>• Minimum withdrawal: KES 20,000</li>
+                  <li>• Processing time: 24 hours</li>
+                  <li>• Method: M-Pesa</li>
+                  <li>• Revenue share: 50% to models</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Profile Settings */}
+        <div className="mt-8 bg-gray-800 rounded-xl p-6 border border-gray-700">
+          <h2 className="text-xl font-semibold text-white mb-4">Profile Settings</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Display Name</label>
+              <input
+                type="text"
+                defaultValue="NairobiBabe"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-pink-500 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Show Rate (tokens/min)</label>
+              <input
+                type="number"
+                defaultValue="20"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-pink-500 focus:outline-none"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">Bio</label>
+              <textarea
+                rows="3"
+                defaultValue="Hey there! I'm your friendly Nairobi girl ready to have some fun! 💕"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-pink-500 focus:outline-none"
+              />
+            </div>
+          </div>
+          <button className="mt-4 bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-lg">
+            Update Profile
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Admin Dashboard Component
+export const AdminDashboard = ({ navigateTo, onLogout }) => {
+  const [adminStats] = useState({
+    totalUsers: 12450,
+    activeModels: 234,
+    totalRevenue: 45600000, // in KES
+    dailyRevenue: 125000,
+    platformShare: 22800000, // 50% of total revenue
+    modelPayouts: 22800000
+  });
+
+  const [recentTransactions] = useState([
+    { id: 1, user: 'viewer123', model: 'NairobiBabe', amount: 1000, tokens: 100, date: '2024-01-15' },
+    { id: 2, user: 'user456', model: 'SwahiliQueen', amount: 500, tokens: 50, date: '2024-01-15' },
+  ]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-red-900 via-gray-900 to-black">
+      <Header 
+        navigateTo={navigateTo} 
+        userType="admin" 
+        isAuthenticated={true}
+        onLogout={onLogout}
+      />
+      
+      <div className="max-w-6xl mx-auto p-6 pt-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">Admin Dashboard</h1>
+          <div className="text-right">
+            <p className="text-gray-400 text-sm">Platform Revenue (50%)</p>
+            <p className="text-2xl font-bold text-green-400">KES {adminStats.platformShare.toLocaleString()}</p>
+          </div>
+        </div>
+        
+        {/* Stats Cards */}
+        <div className="grid md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-blue-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{adminStats.totalUsers.toLocaleString()}</p>
+                <p className="text-gray-400 text-sm">Total Users</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-pink-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">{adminStats.activeModels}</p>
+                <p className="text-gray-400 text-sm">Active Models</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-green-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">KES {adminStats.dailyRevenue.toLocaleString()}</p>
+                <p className="text-gray-400 text-sm">Daily Revenue</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-purple-600 p-3 rounded-full mr-4">
+                <svg className="w-6 h-6 text-white" fill="currentColor">
+                  <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                </svg>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-white">KES {adminStats.totalRevenue.toLocaleString()}</p>
+                <p className="text-gray-400 text-sm">Total Revenue</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Recent Transactions */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">Recent Transactions</h2>
+            <div className="space-y-4">
+              {recentTransactions.map((transaction) => (
+                <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                  <div>
+                    <h3 className="text-white font-semibold">{transaction.user} → {transaction.model}</h3>
+                    <p className="text-gray-400 text-sm">
+                      {transaction.tokens} tokens • {new Date(transaction.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-green-400 font-semibold">KES {transaction.amount}</p>
+                    <p className="text-xs text-gray-400">Platform: KES {transaction.amount / 2}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          {/* System Settings */}
+          <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+            <h2 className="text-xl font-semibold text-white mb-4">System Settings</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Platform Revenue Share (%)</label>
+                <input
+                  type="number"
+                  defaultValue="50"
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-red-500 focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Minimum Withdrawal (KES)</label>
+                <input
+                  type="number"
+                  defaultValue="20000"
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-red-500 focus:outline-none"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Default Show Rate (tokens/min)</label>
+                <input
+                  type="number"
+                  defaultValue="20"
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-red-500 focus:outline-none"
+                />
+              </div>
+              
+              <button className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-semibold">
+                Update Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Private Show Interface Component
+export const PrivateShowInterface = ({ navigateTo, userType }) => {
+  const [isLive, setIsLive] = useState(false);
+  const [viewers] = useState(1);
+  const [tokensPerMinute] = useState(20);
+  const [duration, setDuration] = useState(0);
+  const [chatMessages] = useState([
+    { id: 1, user: 'viewer123', message: 'Hi beautiful! 😍', timestamp: '10:30' },
+    { id: 2, user: 'system', message: 'Private show started', timestamp: '10:31', isSystem: true },
+  ]);
+
+  useEffect(() => {
+    let interval;
+    if (isLive) {
+      interval = setInterval(() => {
+        setDuration(prev => prev + 1);
+      }, 60000); // Update every minute
+    }
+    return () => clearInterval(interval);
+  }, [isLive]);
+
+  const toggleLive = () => {
+    setIsLive(!isLive);
+    if (!isLive) {
+      setDuration(0);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-black">
+      <Header 
+        navigateTo={navigateTo} 
+        userType={userType} 
+        isAuthenticated={true}
+        onLogout={() => navigateTo('home')}
+      />
+      
+      <div className="flex h-screen pt-16">
+        {/* Video Area */}
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 bg-gray-900 relative">
+            {/* Mock video area */}
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-900 to-pink-900">
+              {isLive ? (
+                <div className="text-center">
+                  <div className="w-32 h-32 bg-red-600 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                    <svg className="w-16 h-16 text-white" fill="currentColor">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                  <p className="text-white text-xl">Live Stream Active</p>
+                  {userType === 'model' && (
+                    <p className="text-green-400 mt-2">Earning {tokensPerMinute} tokens/minute</p>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center">
+                  <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                    <svg className="w-16 h-16 text-gray-400" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 13.5v-7l6 3.5-6 3.5z"/>
+                    </svg>
+                  </div>
+                  <p className="text-white text-xl">Stream Offline</p>
+                  <p className="text-gray-400">Click "Go Live" to start streaming</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Stream Controls */}
+            <div className="absolute bottom-4 left-4 right-4">
+              <div className="bg-black bg-opacity-60 rounded-lg p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <button
+                      onClick={toggleLive}
+                      className={`px-6 py-2 rounded-lg font-semibold ${
+                        isLive 
+                          ? 'bg-red-600 hover:bg-red-700 text-white' 
+                          : 'bg-green-600 hover:bg-green-700 text-white'
+                      }`}
+                    >
+                      {isLive ? 'End Stream' : 'Go Live'}
+                    </button>
+                    
+                    {isLive && (
+                      <div className="flex items-center text-white">
+                        <div className="w-3 h-3 bg-red-500 rounded-full mr-2 animate-pulse"></div>
+                        <span>LIVE • {duration} min</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center space-x-4 text-white">
+                    <div className="flex items-center">
+                      <svg className="w-5 h-5 mr-1" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                      </svg>
+                      {viewers} viewers
+                    </div>
+                    <div className="flex items-center">
+                      <svg className="w-5 h-5 mr-1" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                      {tokensPerMinute}/min
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Chat Sidebar */}
+        <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
+          <div className="p-4 border-b border-gray-700">
+            <h3 className="text-white font-semibold">Private Chat</h3>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+            {chatMessages.map((message) => (
+              <div key={message.id} className={`${message.isSystem ? 'text-center' : ''}`}>
+                {message.isSystem ? (
+                  <p className="text-gray-400 text-sm italic">{message.message}</p>
+                ) : (
+                  <div className="bg-gray-700 rounded-lg p-3">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="text-purple-400 font-semibold text-sm">{message.user}</span>
+                      <span className="text-gray-400 text-xs">{message.timestamp}</span>
+                    </div>
+                    <p className="text-white text-sm">{message.message}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          
+          <div className="p-4 border-t border-gray-700">
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                placeholder="Type a message..."
+                className="flex-1 px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm focus:border-purple-500 focus:outline-none"
+              />
+              <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg">
+                Send
+              </button>
+            </div>
+            
+            {userType === 'viewer' && (
+              <div className="mt-3 flex space-x-2">
+                <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm">
+                  Tip 10 tokens
+                </button>
+                <button className="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white py-2 rounded-lg text-sm">
+                  Tip 50 tokens
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Export all components and data
 export { mockPerformers, mockCouples, tokenPackages, countryFlags };
