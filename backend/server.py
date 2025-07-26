@@ -10,8 +10,11 @@ from typing import List
 import uuid
 from datetime import datetime
 
-# Import auth routes
+# Import all route modules
 from auth_routes import router as auth_router
+from token_routes import router as token_router
+from model_routes import router as model_router
+from admin_routes import router as admin_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
