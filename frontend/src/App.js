@@ -1,52 +1,105 @@
-import { useEffect } from "react";
-import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+import React, { useState } from 'react';
+import './App.css';
+import {
+  AgeVerificationModal,
+  Header,
+  Sidebar,
+  Section,
+  NavigationTabs,
+  BottomCTA,
+  mockPerformers,
+  mockCouples
+} from './components';
 
 function App() {
+  const [showAgeVerification, setShowAgeVerification] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('girls');
+  const [activeTab, setActiveTab] = useState('girls');
+
+  const handleAgeVerificationConfirm = (category) => {
+    setSelectedCategory(category);
+    setShowAgeVerification(false);
+  };
+
+  const handleAgeVerificationClose = () => {
+    // In a real app, this would redirect away from the site
+    setShowAgeVerification(false);
+  };
+
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+    <div className="App min-h-screen bg-black">
+      <AgeVerificationModal 
+        isOpen={showAgeVerification}
+        onClose={handleAgeVerificationClose}
+        onConfirm={handleAgeVerificationConfirm}
+      />
+      
+      {!showAgeVerification && (
+        <>
+          <Header />
+          
+          <div className="flex">
+            <Sidebar />
+            
+            <main className="flex-1 p-6 pb-20">
+              <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+              
+              {activeTab === 'girls' && (
+                <>
+                  <Section 
+                    title="🇺🇸 American Sex Cams" 
+                    performers={mockPerformers.slice(0, 6)} 
+                  />
+                  
+                  <Section 
+                    title="Top Free Live Sex Cams" 
+                    performers={mockPerformers.slice(2, 8)} 
+                  />
+                  
+                  <Section 
+                    title="Mobile Live Sex Cams" 
+                    performers={mockPerformers.slice(1, 7)} 
+                  />
+                </>
+              )}
+              
+              {activeTab === 'couples' && (
+                <>
+                  <Section 
+                    title="Couples Live Sex Cams" 
+                    performers={mockCouples} 
+                  />
+                  
+                  <Section 
+                    title="Top Couples Cams" 
+                    performers={mockCouples.slice(1, 5)} 
+                  />
+                </>
+              )}
+              
+              {activeTab === 'guys' && (
+                <>
+                  <Section 
+                    title="Guys Live Sex Cams" 
+                    performers={mockPerformers.slice(3, 8).map(p => ({...p, name: p.name.replace('girl', 'guy')}))} 
+                  />
+                </>
+              )}
+              
+              {activeTab === 'trans' && (
+                <>
+                  <Section 
+                    title="Trans Live Sex Cams" 
+                    performers={mockPerformers.slice(0, 5).map(p => ({...p, name: p.name + '_Trans'}))} 
+                  />
+                </>
+              )}
+            </main>
+          </div>
+          
+          <BottomCTA />
+        </>
+      )}
     </div>
   );
 }
