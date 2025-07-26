@@ -373,8 +373,14 @@ export const LoginPage = () => {
   );
 };
 
-// Register Page Component
-export const RegisterPage = ({ navigateTo }) => {
+// Register Page Component (Backend Integrated)
+export const RegisterPage = () => {
+  const navigate = useNavigate();
+  const { register, isLoading, error, clearError } = useAuth();
+  const { isMobile, isTablet } = useResponsive();
+  const spacing = getResponsiveSpacing(isMobile, isTablet);
+  const textSizes = getResponsiveText(isMobile, isTablet);
+  
   const [userType, setUserType] = useState('viewer');
   const [formData, setFormData] = useState({
     username: '',
@@ -386,11 +392,54 @@ export const RegisterPage = ({ navigateTo }) => {
     terms: false
   });
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    // Clear any existing errors when component mounts
+    clearError();
+  }, [clearError]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Mock registration - in real app, this would create account
-    alert('Registration successful! Please check your email to verify your account.');
-    navigateTo('login');
+    clearError();
+    
+    // Validate form
+    if (formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match');
+      return;
+    }
+    
+    if (!formData.terms) {
+      alert('Please accept the terms and conditions');
+      return;
+    }
+    
+    if (parseInt(formData.age) < 18) {
+      alert('You must be 18 or older to register');
+      return;
+    }
+    
+    const userData = {
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      phone: formData.phone,
+      age: parseInt(formData.age),
+      role: userType
+    };
+    
+    const result = await register(userData);
+    
+    if (result.success) {
+      alert('Registration successful! Please log in with your credentials.');
+      navigate('/login');
+    }
+    // Error is handled by the auth context and displayed below
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   return (
