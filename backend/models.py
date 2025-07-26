@@ -41,6 +41,7 @@ class User(BaseModel):
     is_verified: bool = False
     age: Optional[int] = None
     country: str = "ke"
+    language: str = "en"  # Default language preference
     
     # Timestamps
     created_at: datetime = Field(default_factory=datetime.utcnow)
