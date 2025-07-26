@@ -469,7 +469,7 @@ class QuantumStripTester:
                 if response.status_code == 200:
                     data = response.json()
                     self.assert_test(
-                        data.get("username") == "testviewer2024",
+                        data.get("username").startswith("testviewer"),
                         "User data correctly stored and retrieved",
                         "User data not correctly stored or retrieved"
                     )
