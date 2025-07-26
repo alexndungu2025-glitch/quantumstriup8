@@ -198,3 +198,32 @@ async def update_model_profile(
 async def logout_user():
     """Logout user (client should remove token)"""
     return SuccessResponse(message="Logged out successfully")
+
+@router.put("/update-language", response_model=SuccessResponse)
+async def update_user_language(
+    language_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Update user language preference"""
+    
+    language = language_data.get("language")
+    if not language:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Language is required"
+        )
+    
+    # Validate language code
+    if language not in ["en", "sw"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid language code. Supported languages: en, sw"
+        )
+    
+    # Update user language preference
+    await users_collection.update_one(
+        {"_id": current_user.id},
+        {"$set": {"language": language, "updated_at": datetime.utcnow()}}
+    )
+    
+    return SuccessResponse(message="Language preference updated successfully")
