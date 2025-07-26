@@ -163,7 +163,6 @@ async def create_test_users():
             result = await users_collection.insert_one(test_model.model_dump(by_alias=True))
             
             # Create model profile
-            from models import ModelProfile
             model_profile = ModelProfile(
                 user_id=result.inserted_id,
                 display_name="testmodel"
