@@ -240,10 +240,10 @@
 
 ## test_plan:
   current_focus:
-    - "Real-time Chat System with WebSocket Support"
     - "Comprehensive streaming platform UI with Chat Integration"
+    - "Complete User Flow Testing: Registration, Login, Dashboards, Token Purchase, Streaming"
   stuck_tasks: []
-  test_all: false
+  test_all: true
   test_priority: "high_first"
 
 ## agent_communication:
