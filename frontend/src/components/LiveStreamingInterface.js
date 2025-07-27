@@ -298,9 +298,10 @@ export const ModelLiveStreamingInterface = () => {
 };
 
 // Viewer Live Stream Interface  
-export const ViewerLiveStreamInterface = ({ modelId }) => {
+export const ViewerLiveStreamInterface = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { modelId } = useParams();
   const [selectedQuality, setSelectedQuality] = useState('auto');
 
   const {
