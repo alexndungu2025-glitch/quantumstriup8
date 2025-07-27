@@ -1313,7 +1313,7 @@ export const TokenPurchasePage = () => {
             
             <div className="mt-6 text-center">
               <button
-                onClick={() => navigateTo('viewer-dashboard')}
+                onClick={() => navigate('/viewer-dashboard')}
                 className="text-gray-400 hover:text-white text-sm"
               >
                 ← Back to Dashboard
