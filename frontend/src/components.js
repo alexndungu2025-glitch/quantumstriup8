@@ -1159,7 +1159,6 @@ export const TokenPurchasePage = ({ navigateTo, userType }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black">
       <Header 
-        navigateTo={navigateTo} 
         userType={userType} 
         isAuthenticated={true}
         onLogout={() => navigateTo('home')}
