@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 import { Header } from '../components';
+import { useResponsive, getResponsiveSpacing, getResponsiveText, getResponsiveLayout } from '../responsive';
 import useWebRTCStreaming, { VIDEO_QUALITY_PRESETS } from '../hooks/useWebRTCStreaming';
 import useWebRTCViewer from '../hooks/useWebRTCViewer';
 
