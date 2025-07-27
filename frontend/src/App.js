@@ -17,6 +17,7 @@ import {
   TokenPurchasePage,
   IntegratedStreamingInterface as StreamingInterface,
 } from './IntegratedComponents';
+import { ModelLiveStreamingInterface, ViewerLiveStreamInterface } from './components/LiveStreamingInterface';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
