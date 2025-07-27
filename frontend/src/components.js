@@ -1112,7 +1112,8 @@ export const StreamingInterface = ({ activeTab, navigateTo, userType, isAuthenti
 };
 
 // Bottom Call to Action Component (Updated)
-export const BottomCTA = ({ navigateTo, isAuthenticated }) => {
+export const BottomCTA = ({ isAuthenticated }) => {
+  const navigate = useNavigate();
   if (isAuthenticated) return null;
   
   return (
@@ -1128,7 +1129,7 @@ export const BottomCTA = ({ navigateTo, isAuthenticated }) => {
         </div>
         
         <button 
-          onClick={() => navigateTo('register')}
+          onClick={() => navigate('/register')}
           className="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
         >
           Join FREE
