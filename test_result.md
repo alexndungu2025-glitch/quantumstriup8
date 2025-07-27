@@ -219,6 +219,18 @@
         agent: "main"
         comment: "✅ REAL WEBRTC STREAMING IMPLEMENTED: Complete WebRTC-based live streaming system with audio + video support. Features: Model streaming with getUserMedia camera access, multiple quality options (480p, 720p, 1080p), peer-to-peer connections, viewer connection management, live models display, quality selection for viewers, proper signaling infrastructure, session management, model status updates. Created ModelLiveStreamingInterface for models, ViewerLiveStreamInterface for viewers, LiveModelsSection showing live models, WebRTC hooks for both streaming and viewing. Routes added: /live-streaming/model, /live-streaming/viewer/:modelId. Backend API updated with proper signaling support. Ready for testing with real camera streaming functionality."
 
+  - task: "WebRTC Backend API Endpoints Testing"
+    implemented: true
+    working: "NA"
+    file: "streaming_routes.py (WebRTC specific endpoints)"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "🔄 WEBRTC API TESTING REQUIRED: Need to specifically test the WebRTC streaming infrastructure that was just implemented. Focus areas: 1) Model Status Management - /api/streaming/models/status with is_live=true/is_available=true updates, /api/streaming/models/live endpoint for finding live models; 2) Streaming Session Management - /api/streaming/session for creating sessions with model_id and session_type='public', DELETE /api/streaming/session/{session_id} for ending sessions; 3) WebRTC Signaling Infrastructure - /api/streaming/webrtc/signal for sending WebRTC signals (offer, answer, ice-candidate), /api/streaming/webrtc/signals/{session_id} for retrieving signals; 4) Complete Integration Testing - test flow: model goes live → updates status → creates session → viewers find live models → WebRTC signaling works. Use test users: model@test.com and viewer@test.com (password: password123). All other backend functionality was previously tested and confirmed working."
+
 ## frontend:
   - task: "Comprehensive streaming platform UI with WebRTC Live Streaming"
     implemented: true
