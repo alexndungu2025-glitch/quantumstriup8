@@ -196,6 +196,18 @@ export const ModelLiveStreamingInterface = () => {
                       {isLoading ? 'Please wait...' : (isStreaming ? 'End Stream' : 'Go Live')}
                     </button>
 
+                    {/* Test Camera Button (only show when not streaming) */}
+                    {!isStreaming && (
+                      <button
+                        onClick={testCamera}
+                        disabled={isLoading}
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                        title="Test your camera before going live"
+                      >
+                        🎥 Test Camera
+                      </button>
+                    )}
+
                     {/* Quality Selection */}
                     <div className="relative">
                       <button
