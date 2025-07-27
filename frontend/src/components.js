@@ -1983,7 +1983,7 @@ export const PrivateShowInterface = () => {
               </button>
             </div>
             
-            {userType === 'viewer' && (
+            {user?.role === 'viewer' && (
               <div className="mt-3 flex space-x-2">
                 <button className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm">
                   Tip 10 tokens
