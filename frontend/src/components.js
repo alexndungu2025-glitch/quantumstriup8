@@ -1323,7 +1323,9 @@ export const TokenPurchasePage = ({ navigateTo, userType }) => {
 };
 
 // Viewer Dashboard Component
-export const ViewerDashboard = ({ navigateTo, onLogout }) => {
+export const ViewerDashboard = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [userTokens] = useState(150);
   const [favoriteModels] = useState(mockPerformers.slice(0, 4));
   const [recentPurchases] = useState([
