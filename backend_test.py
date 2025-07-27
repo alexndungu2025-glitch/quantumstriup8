@@ -610,6 +610,9 @@ class QuantumStripTester:
         # Phase 3 Tests - Chat System
         self.test_chat_system()
         
+        # WebRTC Live Streaming Tests (New Implementation)
+        self.test_webrtc_live_streaming()
+        
         # Print final results
         self.print_final_results()
 
