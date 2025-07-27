@@ -270,7 +270,6 @@
 
 ## test_plan:
   current_focus:
-    - "WebRTC Backend API Endpoints Testing"
     - "Real WebRTC Live Streaming Implementation"
   stuck_tasks: []
   test_all: false
