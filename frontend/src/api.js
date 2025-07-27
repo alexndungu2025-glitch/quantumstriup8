@@ -120,12 +120,12 @@ export const modelAPI = {
 
 // Streaming API
 export const streamingAPI = {
-  createSession: async (sessionData) => {
+  createStreamingSession: async (sessionData) => {
     const response = await api.post('/streaming/session', sessionData);
     return response.data;
   },
   
-  endSession: async (sessionId) => {
+  endStreamingSession: async (sessionId) => {
     const response = await api.delete(`/streaming/session/${sessionId}`);
     return response.data;
   },
@@ -150,8 +150,10 @@ export const streamingAPI = {
     return response.data;
   },
   
-  updateModelStatus: async (statusData) => {
-    const response = await api.patch('/streaming/models/status', statusData);
+  updateModelStatus: async (isLive, isAvailable) => {
+    const response = await api.patch('/streaming/models/status', null, {
+      params: { is_live: isLive, is_available: isAvailable }
+    });
     return response.data;
   },
   
@@ -162,6 +164,17 @@ export const streamingAPI = {
   
   getWebRTCSignals: async (sessionId) => {
     const response = await api.get(`/streaming/webrtc/signals/${sessionId}`);
+    return response.data;
+  },
+
+  // Legacy methods for backward compatibility
+  createSession: async (sessionData) => {
+    const response = await api.post('/streaming/session', sessionData);
+    return response.data;
+  },
+  
+  endSession: async (sessionId) => {
+    const response = await api.delete(`/streaming/session/${sessionId}`);
     return response.data;
   }
 };
