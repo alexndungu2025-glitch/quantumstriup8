@@ -57,7 +57,7 @@ export const useWebRTCStreaming = () => {
     
     try {
       // Check if we're on HTTPS or localhost (required for getUserMedia)
-      if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
         throw new Error('Camera access requires HTTPS connection');
       }
 
@@ -66,10 +66,18 @@ export const useWebRTCStreaming = () => {
         throw new Error('Camera access not supported in this browser');
       }
 
-      // Check permissions first
-      const permissionStatus = await navigator.permissions.query({ name: 'camera' });
-      if (permissionStatus.state === 'denied') {
-        throw new Error('Camera permission was denied. Please enable camera access in your browser settings.');
+      // Try to get permission status, but don't fail if not supported
+      let permissionGranted = false;
+      try {
+        if (navigator.permissions && navigator.permissions.query) {
+          const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+          if (permissionStatus.state === 'denied') {
+            throw new Error('Camera permission was permanently denied. Please reset camera permissions in your browser settings and refresh the page.');
+          }
+          permissionGranted = permissionStatus.state === 'granted';
+        }
+      } catch (permErr) {
+        console.log('Permission API not fully supported, will try direct access');
       }
 
       const constraints = {
@@ -81,7 +89,10 @@ export const useWebRTCStreaming = () => {
         }
       };
 
+      console.log('Requesting camera access with constraints:', constraints);
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log('Camera access granted successfully');
+      
       setLocalStream(stream);
       
       // Display local video
@@ -89,6 +100,13 @@ export const useWebRTCStreaming = () => {
         localVideoRef.current.srcObject = stream;
         localVideoRef.current.muted = true; // Prevent feedback
         localVideoRef.current.playsInline = true; // Important for mobile
+        
+        // Ensure video starts playing
+        try {
+          await localVideoRef.current.play();
+        } catch (playErr) {
+          console.log('Video autoplay blocked, user interaction required');
+        }
       }
       
       return stream;
@@ -98,17 +116,19 @@ export const useWebRTCStreaming = () => {
       let errorMessage = 'Could not access camera/microphone.';
       
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        errorMessage = 'Camera permission denied. Please allow camera access and try again.';
+        errorMessage = '🚫 Camera access was denied. Please:\n1. Click the camera icon in your browser address bar\n2. Allow camera access for this site\n3. Refresh the page and try again';
       } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        errorMessage = 'No camera or microphone found. Please connect a camera and try again.';
+        errorMessage = '📹 No camera found. Please:\n1. Connect a camera to your device\n2. Make sure no other app is using the camera\n3. Try refreshing the page';
       } else if (err.name === 'NotSupportedError' || err.name === 'ConstraintNotSatisfiedError') {
-        errorMessage = 'Camera settings not supported. Try with different quality settings.';
+        errorMessage = '⚙️ Camera settings not supported. Try using a different quality setting or browser.';
       } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-        errorMessage = 'Camera is being used by another application. Please close other apps and try again.';
+        errorMessage = '🔒 Camera is busy. Please:\n1. Close other apps using the camera\n2. Close other browser tabs with camera access\n3. Try again';
       } else if (err.message.includes('HTTPS')) {
-        errorMessage = 'Camera access requires a secure connection (HTTPS).';
+        errorMessage = '🔐 Camera access requires a secure connection (HTTPS).';
       } else if (err.message.includes('not supported')) {
         errorMessage = err.message;
+      } else if (err.message.includes('denied')) {
+        errorMessage = '🚫 Camera permission denied. Please check your browser settings and allow camera access.';
       }
       
       setError(errorMessage);
