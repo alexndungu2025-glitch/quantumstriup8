@@ -604,3 +604,267 @@ export const TokenPurchasePage = () => {
     </div>
   );
 };
+
+// Integrated Streaming Interface with Chat
+export const IntegratedStreamingInterface = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+  const { isMobile, isTablet } = useResponsive();
+  const [liveModels, setLiveModels] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('girls');
+  
+  // Load live models from backend
+  useEffect(() => {
+    const loadLiveModels = async () => {
+      try {
+        setIsLoading(true);
+        const response = await streamingAPI.getLiveModels();
+        setLiveModels(response.models || []);
+      } catch (err) {
+        console.error('Error loading live models:', err);
+        setError('Failed to load live models');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadLiveModels();
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(loadLiveModels, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Model Card Component
+  const ModelCard = ({ model }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    
+    return (
+      <div 
+        className="bg-gray-800 rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:scale-105"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="relative">
+          <img 
+            src={model.avatar_url || '/default-avatar.jpg'} 
+            alt={model.display_name}
+            className="w-full h-48 object-cover"
+          />
+          
+          {/* Live Badge */}
+          <div className="absolute top-2 left-2 bg-red-600 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center">
+            <div className="w-2 h-2 bg-white rounded-full mr-1 animate-pulse"></div>
+            LIVE
+          </div>
+          
+          {/* Viewer Count */}
+          <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded-full text-xs">
+            👥 {model.current_viewers || 0}
+          </div>
+          
+          {/* Hover Overlay */}
+          {isHovered && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="space-y-2">
+                <button
+                  onClick={() => openModelChat(model.model_id, model.display_name)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                >
+                  💬 Join Chat
+                </button>
+                <button
+                  onClick={() => navigate(`/private-show/${model.model_id}`)}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-black px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                >
+                  🎬 Private Show
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className="p-4">
+          <h3 className="text-white font-semibold text-lg mb-1">{model.display_name}</h3>
+          <p className="text-gray-400 text-sm mb-2 line-clamp-2">{model.bio || 'No bio available'}</p>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center text-yellow-400">
+                <span className="text-sm">⭐ {model.rating?.toFixed(1) || '4.5'}</span>
+              </div>
+              <span className="text-gray-500 text-xs">•</span>
+              <span className="text-gray-400 text-xs">{model.total_shows || 0} shows</span>
+            </div>
+            
+            <div className="text-purple-400 text-sm font-semibold">
+              {model.show_rate || 20} tokens/min
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Header Component
+  const Header = () => (
+    <header className="bg-gray-900 border-b border-gray-700 sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              QUANTUMSTRIP
+            </h1>
+            <div className="hidden md:block">
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-green-400 text-sm font-semibold">
+                  {liveModels.length} models online
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                <div className="text-white">
+                  <span className="text-sm text-gray-400">Welcome, </span>
+                  <span className="font-semibold">{user.username}</span>
+                </div>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                >
+                  Dashboard
+                </button>
+                <button
+                  onClick={logout}
+                  className="text-gray-400 hover:text-white text-sm transition-colors"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors"
+                >
+                  Register
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+
+  // Category Tabs
+  const CategoryTabs = () => {
+    const categories = [
+      { id: 'girls', label: '👩 Girls', emoji: '👩' },
+      { id: 'couples', label: '💑 Couples', emoji: '💑' },
+      { id: 'guys', label: '👨 Guys', emoji: '👨' },
+      { id: 'trans', label: '🏳️‍⚧️ Trans', emoji: '🏳️‍⚧️' }
+    ];
+
+    return (
+      <div className="bg-gray-800 rounded-lg p-1 flex space-x-1 mb-6">
+        {categories.map((category) => (
+          <button
+            key={category.id}
+            onClick={() => setSelectedCategory(category.id)}
+            className={`flex-1 py-3 px-4 rounded-md transition-all text-sm font-semibold ${
+              selectedCategory === category.id
+                ? 'bg-purple-600 text-white'
+                : 'text-gray-400 hover:text-white hover:bg-gray-700'
+            }`}
+          >
+            {category.label}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-500 mx-auto mb-4"></div>
+            <p className="text-white text-lg">Loading live streams...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black">
+        <Header />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="text-red-400 text-6xl mb-4">⚠️</div>
+            <p className="text-white text-lg mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black">
+      <Header />
+      
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <CategoryTabs />
+        
+        {liveModels.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-gray-400 text-6xl mb-4">📹</div>
+            <h2 className="text-white text-2xl font-semibold mb-2">No Live Streams</h2>
+            <p className="text-gray-400 mb-6">No models are currently streaming. Check back later!</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
+        ) : (
+          <div className={`grid gap-6 ${
+            isMobile ? 'grid-cols-1' : 
+            isTablet ? 'grid-cols-2' : 
+            'grid-cols-3 lg:grid-cols-4'
+          }`}>
+            {liveModels.map((model) => (
+              <ModelCard key={model.model_id} model={model} />
+            ))}
+          </div>
+        )}
+      </main>
+      
+      {/* Chat Integration */}
+      <ChatIntegration />
+    </div>
+  );
+};
