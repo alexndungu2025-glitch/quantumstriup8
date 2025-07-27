@@ -107,3 +107,20 @@ async def get_current_admin(current_user: User = Depends(get_current_user)):
             detail="Access denied. Admin role required."
         )
     return current_user
+
+async def get_current_user_websocket(token: str):
+    """Get current authenticated user for WebSocket connections"""
+    try:
+        user_id = verify_token(token)
+        
+        user_data = await users_collection.find_one({"_id": user_id})
+        if user_data is None:
+            return None
+        
+        user = User(**user_data)
+        if not user.is_active:
+            return None
+        
+        return user
+    except:
+        return None
