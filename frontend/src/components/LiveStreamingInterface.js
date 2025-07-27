@@ -217,12 +217,51 @@ export const ModelLiveStreamingInterface = () => {
 
           {/* Error Display */}
           {error && (
-            <div className="bg-red-900 border border-red-700 text-red-100 px-4 py-3 mb-4">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2" fill="currentColor">
+            <div className="bg-red-900 border border-red-700 text-red-100 px-4 py-4 mb-4 rounded-lg">
+              <div className="flex items-start">
+                <svg className="w-6 h-6 mr-3 mt-0.5 flex-shrink-0" fill="currentColor">
                   <path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"/>
                 </svg>
-                {error}
+                <div className="flex-1">
+                  <h4 className="font-semibold mb-2">Camera Access Issue</h4>
+                  <div className="whitespace-pre-line text-sm leading-relaxed">
+                    {error}
+                  </div>
+                  {error.includes('denied') && (
+                    <div className="mt-4 pt-3 border-t border-red-700">
+                      <p className="text-sm font-medium mb-2">Quick Fix:</p>
+                      <div className="space-y-2 text-sm">
+                        <button 
+                          onClick={() => window.location.reload()}
+                          className="block w-full text-left bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-white text-sm"
+                        >
+                          🔄 Refresh Page & Try Again
+                        </button>
+                        <button 
+                          onClick={() => {
+                            const helpText = `
+Camera Permission Help:
+
+1. Look for camera icon 🎥 in your browser address bar
+2. Click on it and select "Allow"
+3. Refresh this page
+4. Click "Go Live" again
+
+If you still have issues:
+- Close other apps using the camera
+- Try a different browser
+- Check your antivirus camera blocking settings
+                            `;
+                            alert(helpText);
+                          }}
+                          className="block w-full text-left bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-white text-sm"
+                        >
+                          ❓ Show Detailed Help
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
