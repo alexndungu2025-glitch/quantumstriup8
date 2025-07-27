@@ -21,6 +21,11 @@ withdrawals_collection = database.withdrawals
 private_shows_collection = database.private_shows
 system_settings_collection = database.system_settings
 
+# Chat System Collections
+chat_messages_collection = database.chat_messages
+chat_rooms_collection = database.chat_rooms
+chat_moderation_collection = database.chat_moderation_actions
+
 async def get_database():
     """Get database instance"""
     return database
