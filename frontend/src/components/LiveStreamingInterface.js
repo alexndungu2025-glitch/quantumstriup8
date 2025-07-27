@@ -31,7 +31,8 @@ export const ModelLiveStreamingInterface = () => {
     stopStreaming,
     changeStreamQuality,
     availableQualities,
-    qualityLabels
+    qualityLabels,
+    setError
   } = useWebRTCStreaming();
 
   // Timer for session duration
