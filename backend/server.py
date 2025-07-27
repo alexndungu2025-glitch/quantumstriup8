@@ -16,6 +16,7 @@ from token_routes import router as token_router
 from model_routes import router as model_router
 from admin_routes import router as admin_router
 from streaming_routes import router as streaming_router
+from chat_routes import router as chat_router
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
