@@ -1470,7 +1470,9 @@ export const ViewerDashboard = () => {
 };
 
 // Model Dashboard Component
-export const ModelDashboard = ({ navigateTo, onLogout }) => {
+export const ModelDashboard = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [modelStats] = useState({
     tokensEarned: 45600,
     keshBalance: 22800, // 50% of tokens earned
@@ -1497,10 +1499,9 @@ export const ModelDashboard = ({ navigateTo, onLogout }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-900 via-gray-900 to-black">
       <Header 
-        navigateTo={navigateTo} 
         userType="model" 
         isAuthenticated={true}
-        onLogout={onLogout}
+        onLogout={logout}
       />
       
       <div className="max-w-6xl mx-auto p-6 pt-8">
@@ -1508,7 +1509,7 @@ export const ModelDashboard = ({ navigateTo, onLogout }) => {
           <h1 className="text-3xl font-bold text-white">Model Dashboard</h1>
           <div className="flex space-x-4">
             <button
-              onClick={() => navigateTo('private-show')}
+              onClick={() => navigate('/private-show')}
               className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800"
             >
               Go Live
