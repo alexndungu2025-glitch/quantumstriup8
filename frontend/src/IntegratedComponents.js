@@ -638,6 +638,14 @@ export const IntegratedStreamingInterface = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Function to open model chat
+  const openModelChat = (modelId, modelName) => {
+    // This would typically open a chat modal or navigate to a chat page
+    console.log(`Opening chat with ${modelName} (${modelId})`);
+    // For now, just navigate to a chat route
+    navigate(`/chat/${modelId}`);
+  };
+
   // Model Card Component
   const ModelCard = ({ model }) => {
     const [isHovered, setIsHovered] = useState(false);
