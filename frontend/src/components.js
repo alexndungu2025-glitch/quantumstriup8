@@ -1831,7 +1831,9 @@ export const AdminDashboard = () => {
 };
 
 // Private Show Interface Component
-export const PrivateShowInterface = ({ navigateTo, userType }) => {
+export const PrivateShowInterface = () => {
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [isLive, setIsLive] = useState(false);
   const [viewers] = useState(1);
   const [tokensPerMinute] = useState(20);
@@ -1861,10 +1863,9 @@ export const PrivateShowInterface = ({ navigateTo, userType }) => {
   return (
     <div className="min-h-screen bg-black">
       <Header 
-        navigateTo={navigateTo} 
-        userType={userType} 
+        userType={user?.role} 
         isAuthenticated={true}
-        onLogout={() => navigateTo('home')}
+        onLogout={logout}
       />
       
       <div className="flex h-screen pt-16">
