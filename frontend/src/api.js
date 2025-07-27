@@ -222,6 +222,68 @@ export const adminAPI = {
   }
 };
 
+// Chat System API
+export const chatAPI = {
+  getChatRooms: async () => {
+    const response = await api.get('/chat/rooms');
+    return response.data;
+  },
+  
+  getChatHistory: async (roomId, limit = 50, before = null) => {
+    const params = new URLSearchParams();
+    params.append('limit', limit.toString());
+    if (before) params.append('before', before);
+    
+    const response = await api.get(`/chat/rooms/${roomId}/messages?${params.toString()}`);
+    return response.data;
+  },
+  
+  getRoomUsers: async (roomId) => {
+    const response = await api.get(`/chat/rooms/${roomId}/users`);
+    return response.data;
+  },
+  
+  deleteMessage: async (messageId) => {
+    const response = await api.delete(`/chat/messages/${messageId}`);
+    return response.data;
+  },
+  
+  // WebSocket connection helper
+  createWebSocketConnection: (roomId, onMessage, onError) => {
+    const token = localStorage.getItem('quantumstrip_token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+    
+    const wsUrl = `${API_BASE_URL.replace('http', 'ws')}/api/chat/ws/chat/${roomId}?token=${token}`;
+    const ws = new WebSocket(wsUrl);
+    
+    ws.onopen = () => {
+      console.log(`Connected to chat room: ${roomId}`);
+    };
+    
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        onMessage(data);
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+    
+    ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      if (onError) onError(error);
+    };
+    
+    ws.onclose = (event) => {
+      console.log(`Disconnected from chat room: ${roomId}`, event.code, event.reason);
+    };
+    
+    return ws;
+  }
+};
+
 // Utility functions
 export const apiUtils = {
   handleApiError: (error) => {
