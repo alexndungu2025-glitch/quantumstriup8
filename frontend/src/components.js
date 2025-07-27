@@ -1672,7 +1672,9 @@ export const ModelDashboard = () => {
 };
 
 // Admin Dashboard Component
-export const AdminDashboard = ({ navigateTo, onLogout }) => {
+export const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [adminStats] = useState({
     totalUsers: 12450,
     activeModels: 234,
@@ -1690,10 +1692,9 @@ export const AdminDashboard = ({ navigateTo, onLogout }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-900 via-gray-900 to-black">
       <Header 
-        navigateTo={navigateTo} 
         userType="admin" 
         isAuthenticated={true}
-        onLogout={onLogout}
+        onLogout={logout}
       />
       
       <div className="max-w-6xl mx-auto p-6 pt-8">
