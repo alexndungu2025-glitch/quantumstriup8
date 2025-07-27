@@ -195,12 +195,18 @@ export const useWebRTCStreaming = () => {
       const stream = await startLocalStream(quality);
       setStreamQuality(quality);
       
+      // Get current user's model profile to get model ID
+      const userProfile = JSON.parse(localStorage.getItem('user'));
+      if (!userProfile || userProfile.role !== 'model') {
+        throw new Error('User must be a model to start streaming');
+      }
+      
       // Update model status to live
       await streamingAPI.updateModelStatus(true, true);
       
-      // Create streaming session
+      // Create streaming session with user's model ID
       const sessionResponse = await streamingAPI.createStreamingSession({
-        model_id: 'current_model', // This should be the actual model ID
+        model_id: userProfile.id, // Use the actual user ID as model ID
         session_type: 'public'
       });
       
@@ -211,7 +217,7 @@ export const useWebRTCStreaming = () => {
       
     } catch (err) {
       console.error('Error starting streaming:', err);
-      setError('Failed to start streaming. Please try again.');
+      setError(err.message || 'Failed to start streaming. Please try again.');
       stopLocalStream();
     } finally {
       setIsLoading(false);
