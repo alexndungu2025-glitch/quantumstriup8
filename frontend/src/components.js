@@ -617,8 +617,12 @@ export const RegisterPage = () => {
 // Header Component (Updated for QuantumStrip)
 export const Header = ({ userType, isAuthenticated, onLogout, userTokens = 0 }) => {
   const navigate = useNavigate();
+  const { isMobile, isTablet } = useResponsive();
+  const textSizes = getResponsiveText(isMobile, isTablet);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   
   const navigateTo = (path) => {
+    setShowMobileMenu(false); // Close mobile menu when navigating
     switch(path) {
       case 'home':
         navigate('/');
@@ -647,56 +651,163 @@ export const Header = ({ userType, isAuthenticated, onLogout, userTokens = 0 }) 
   };
 
   return (
-    <header className="bg-gray-900 border-b border-gray-700 px-4 py-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <button className="lg:hidden text-gray-300 hover:text-white mr-4">
-            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          
-          <div className="flex items-center cursor-pointer" onClick={() => navigateTo('home')}>
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-2 rounded-full mr-3">
-              <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              </svg>
+    <>
+      <header className="bg-gray-900 border-b border-gray-700 px-4 py-3 relative">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            {isMobile && (
+              <button 
+                className="text-gray-300 hover:text-white mr-4"
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+              >
+                <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            )}
+            
+            <div className="flex items-center cursor-pointer" onClick={() => navigateTo('home')}>
+              <div className={`bg-gradient-to-r from-purple-600 to-blue-600 text-white ${isMobile ? 'p-1.5' : 'p-2'} rounded-full mr-3`}>
+                <svg width={isMobile ? "20" : "24"} height={isMobile ? "20" : "24"} fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <h1 className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent`}>
+                {isMobile ? 'QS' : 'QUANTUMSTRIP'}
+              </h1>
             </div>
-            <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              QUANTUMSTRIP
-            </h1>
-          </div>
-        </div>
-        
-        <div className="flex items-center">
-          {/* Language Switcher */}
-          <div className="mr-4">
-            <LanguageSwitcher variant="compact" />
           </div>
           
-          {isAuthenticated ? (
+          {/* Desktop Navigation */}
+          {!isMobile && (
             <div className="flex items-center">
-              {userType === 'viewer' && (
-                <div className="flex items-center mr-4">
+              {/* Language Switcher */}
+              <div className="mr-4">
+                <LanguageSwitcher variant="compact" />
+              </div>
+              
+              {isAuthenticated ? (
+                <div className="flex items-center">
+                  {userType === 'viewer' && (
+                    <div className="flex items-center mr-4">
+                      <button
+                        onClick={() => navigateTo('token-purchase')}
+                        className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg mr-2 flex items-center hover:from-green-700 hover:to-green-800"
+                      >
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" className="mr-1">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        {userTokens} Tokens
+                      </button>
+                    </div>
+                  )}
+                  
                   <button
-                    onClick={() => navigateTo('token-purchase')}
-                    className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-2 rounded-lg mr-2 flex items-center hover:from-green-700 hover:to-green-800"
+                    onClick={() => navigateTo(userType === 'admin' ? 'admin-dashboard' : 
+                                            userType === 'model' ? 'model-dashboard' : 'viewer-dashboard')}
+                    className="text-gray-300 hover:text-white mr-4"
                   >
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" className="mr-1">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
-                    {userTokens} Tokens
+                    Dashboard
+                  </button>
+                  
+                  <button
+                    onClick={onLogout}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => navigateTo('login')}
+                    className="text-gray-300 hover:text-white px-4 py-2 rounded-lg"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => navigateTo('register')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+                  >
+                    Register
                   </button>
                 </div>
               )}
+            </div>
+          )}
+          
+          {/* Mobile tokens display */}
+          {isMobile && isAuthenticated && userType === 'viewer' && (
+            <button
+              onClick={() => navigateTo('token-purchase')}
+              className="bg-gradient-to-r from-green-600 to-green-700 text-white px-3 py-1.5 rounded-lg flex items-center text-sm"
+            >
+              {userTokens}
+            </button>
+          )}
+        </div>
+      </header>
+      
+      {/* Mobile Menu Overlay */}
+      {isMobile && showMobileMenu && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setShowMobileMenu(false)}>
+          <div className="absolute top-16 left-0 right-0 bg-gray-900 border-b border-gray-700 shadow-lg">
+            <div className="py-4 px-4 space-y-3">
+              <div className="mb-4">
+                <LanguageSwitcher variant="compact" />
+              </div>
               
-              <button
-                onClick={() => navigateTo(userType === 'admin' ? 'admin-dashboard' : 
-                                        userType === 'model' ? 'model-dashboard' : 'viewer-dashboard')}
-                className="text-gray-300 hover:text-white mr-4"
-              >
-                Dashboard
-              </button>
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => navigateTo(userType === 'admin' ? 'admin-dashboard' : 
+                                            userType === 'model' ? 'model-dashboard' : 'viewer-dashboard')}
+                    className="block w-full text-left text-gray-300 hover:text-white py-2"
+                  >
+                    Dashboard
+                  </button>
+                  
+                  {userType === 'viewer' && (
+                    <button
+                      onClick={() => navigateTo('token-purchase')}
+                      className="block w-full text-left bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                    >
+                      Buy Tokens ({userTokens} available)
+                    </button>
+                  )}
+                  
+                  <button
+                    onClick={() => {
+                      setShowMobileMenu(false);
+                      onLogout();
+                    }}
+                    className="block w-full text-left bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <button
+                    onClick={() => navigateTo('login')}
+                    className="block w-full text-left text-gray-300 hover:text-white py-2"
+                  >
+                    Login
+                  </button>
+                  <button
+                    onClick={() => navigateTo('register')}
+                    className="block w-full text-left bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+                  >
+                    Register
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
               
               <button
                 onClick={onLogout}
