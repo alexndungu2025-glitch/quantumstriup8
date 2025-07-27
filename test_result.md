@@ -234,7 +234,8 @@
 
 ## test_plan:
   current_focus:
-    - "Comprehensive streaming platform UI"
+    - "Real-time Chat System with WebSocket Support"
+    - "Comprehensive streaming platform UI with Chat Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
