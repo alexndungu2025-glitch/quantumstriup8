@@ -193,3 +193,84 @@ class SystemSettings(BaseModel):
         json_encoders = {
             datetime: lambda v: v.isoformat()
         }
+
+# Chat System Models
+class MessageType(str, Enum):
+    TEXT = "text"
+    EMOJI = "emoji"
+    TIP = "tip"
+    SYSTEM = "system"
+    PRIVATE = "private"
+
+class ChatMessage(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    room_id: str  # Can be model_id for public chat or unique room for private
+    sender_id: str
+    sender_username: str
+    sender_role: UserRole
+    
+    # Message content
+    message_type: MessageType = MessageType.TEXT
+    content: str
+    tip_amount: Optional[int] = None  # For tip messages
+    
+    # Chat moderation
+    is_deleted: bool = False
+    deleted_by: Optional[str] = None
+    deleted_at: Optional[datetime] = None
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    class Config:
+        populate_by_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
+class ChatRoom(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    room_type: str  # "public" or "private"
+    name: str
+    
+    # For public rooms (linked to model streams)
+    model_id: Optional[str] = None
+    
+    # For private rooms
+    participants: List[str] = []  # User IDs
+    
+    # Room settings
+    is_active: bool = True
+    max_participants: Optional[int] = None
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    
+    class Config:
+        populate_by_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
+
+class ChatModerationAction(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    room_id: str
+    moderator_id: str  # Admin or model who performed action
+    target_user_id: str
+    action_type: str  # "mute", "kick", "ban", "delete_message"
+    duration_minutes: Optional[int] = None  # For temporary actions
+    reason: Optional[str] = None
+    
+    # Message specific (for delete_message action)
+    message_id: Optional[str] = None
+    
+    # Timestamps
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    expires_at: Optional[datetime] = None
+    
+    class Config:
+        populate_by_name = True
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
