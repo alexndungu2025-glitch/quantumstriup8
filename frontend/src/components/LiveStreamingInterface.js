@@ -58,9 +58,39 @@ export const ModelLiveStreamingInterface = () => {
 
   const handleStartStreaming = async () => {
     try {
+      console.log('User clicked Go Live button');
+      console.log('Current user:', JSON.parse(localStorage.getItem('user') || '{}'));
+      console.log('Browser user agent:', navigator.userAgent);
+      console.log('Current URL:', window.location.href);
+      
       await startStreaming(streamQuality);
     } catch (err) {
       console.error('Failed to start streaming:', err);
+      console.error('Error name:', err.name);
+      console.error('Error message:', err.message);
+    }
+  };
+
+  // Test camera function
+  const testCamera = async () => {
+    try {
+      setError(null);
+      console.log('Testing camera access...');
+      
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 640, height: 480 },
+        audio: true
+      });
+      
+      console.log('Camera test successful!', stream);
+      
+      // Stop the test stream
+      stream.getTracks().forEach(track => track.stop());
+      
+      alert('✅ Camera test successful! Your camera is working properly.');
+    } catch (err) {
+      console.error('Camera test failed:', err);
+      setError(`Camera Test Failed: ${err.message}`);
     }
   };
 
