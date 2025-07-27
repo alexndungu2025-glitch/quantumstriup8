@@ -10,6 +10,11 @@ import useWebRTCViewer from '../hooks/useWebRTCViewer';
 export const ModelLiveStreamingInterface = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { isMobile, isTablet } = useResponsive();
+  const spacing = getResponsiveSpacing(isMobile, isTablet);
+  const textSizes = getResponsiveText(isMobile, isTablet);
+  const layout = getResponsiveLayout(isMobile, isTablet);
+  
   const [showQualityMenu, setShowQualityMenu] = useState(false);
   const [earnings, setEarnings] = useState(0);
   const [sessionDuration, setSessionDuration] = useState(0);
