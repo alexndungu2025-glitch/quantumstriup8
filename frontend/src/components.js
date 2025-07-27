@@ -1834,35 +1834,30 @@ export const AdminDashboard = () => {
   );
 };
 
-// Private Show Interface Component
+// Private Show Interface Component - redirects to new live streaming interface
 export const PrivateShowInterface = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  const [isLive, setIsLive] = useState(false);
-  const [viewers] = useState(1);
-  const [tokensPerMinute] = useState(20);
-  const [duration, setDuration] = useState(0);
-  const [chatMessages] = useState([
-    { id: 1, user: 'viewer123', message: 'Hi beautiful! 😍', timestamp: '10:30' },
-    { id: 2, user: 'system', message: 'Private show started', timestamp: '10:31', isSystem: true },
-  ]);
+  const { user } = useAuth();
 
   useEffect(() => {
-    let interval;
-    if (isLive) {
-      interval = setInterval(() => {
-        setDuration(prev => prev + 1);
-      }, 60000); // Update every minute
+    // Redirect based on user role to the appropriate streaming interface
+    if (user?.role === 'model') {
+      navigate('/live-streaming/model');
+    } else {
+      // For viewers, redirect to main page to select a model
+      navigate('/');
     }
-    return () => clearInterval(interval);
-  }, [isLive]);
+  }, [user, navigate]);
 
-  const toggleLive = () => {
-    setIsLive(!isLive);
-    if (!isLive) {
-      setDuration(0);
-    }
-  };
+  // Show loading while redirecting
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-white text-xl">Redirecting to live streaming...</p>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-black">
