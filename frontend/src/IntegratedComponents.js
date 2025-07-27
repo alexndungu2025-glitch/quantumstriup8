@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { useTokens, useModelEarnings, useAdminStats } from './hooks';
 import { useResponsive, getResponsiveSpacing, getResponsiveText, getResponsiveGrid } from './responsive';
-import { apiUtils } from './api';
+import { apiUtils, streamingAPI } from './api';
+import { ChatIntegration } from './ChatComponents';
 
 // Updated Register Page Component (Backend Integrated)
 export const RegisterPage = () => {
