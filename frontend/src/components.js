@@ -848,15 +848,16 @@ export const Sidebar = () => {
 };
 
 // Performer Card Component (Updated)
-export const PerformerCard = ({ performer, navigateTo, userType, isAuthenticated }) => {
+export const PerformerCard = ({ performer, userType, isAuthenticated }) => {
+  const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   
   const handleWatchLive = () => {
     if (!isAuthenticated) {
-      navigateTo('login');
+      navigate('/login');
       return;
     }
-    navigateTo('private-show');
+    navigate('/private-show');
   };
   
   return (
