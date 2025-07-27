@@ -371,6 +371,7 @@ export const useWebRTCStreaming = () => {
     stopStreaming,
     changeStreamQuality,
     handleViewerConnection,
+    setError, // Export setError for external use
     
     // Utils
     availableQualities: Object.keys(VIDEO_QUALITY_PRESETS),
