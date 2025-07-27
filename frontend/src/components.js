@@ -1886,7 +1886,7 @@ export const PrivateShowInterface = () => {
                     </svg>
                   </div>
                   <p className="text-white text-xl">Live Stream Active</p>
-                  {userType === 'model' && (
+                  {user?.role === 'model' && (
                     <p className="text-green-400 mt-2">Earning {tokensPerMinute} tokens/minute</p>
                   )}
                 </div>
