@@ -1336,10 +1336,9 @@ export const ViewerDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black">
       <Header 
-        navigateTo={navigateTo} 
         userType="viewer" 
         isAuthenticated={true}
-        onLogout={onLogout}
+        onLogout={logout}
         userTokens={userTokens}
       />
       
@@ -1347,7 +1346,7 @@ export const ViewerDashboard = () => {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">Viewer Dashboard</h1>
           <button
-            onClick={() => navigateTo('token-purchase')}
+            onClick={() => navigate('/token-purchase')}
             className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800"
           >
             Buy Tokens
