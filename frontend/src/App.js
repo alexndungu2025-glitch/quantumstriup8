@@ -97,6 +97,19 @@ const AppRoutes = () => {
         </ProtectedRoute>
       } />
       
+      {/* New Live Streaming Routes */}
+      <Route path="/live-streaming/model" element={
+        <ProtectedRoute allowedRoles={['model']}>
+          <ModelLiveStreamingInterface />
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/live-streaming/viewer/:modelId" element={
+        <ProtectedRoute>
+          <ViewerLiveStreamInterface />
+        </ProtectedRoute>
+      } />
+      
       {/* Catch all route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
