@@ -5,6 +5,7 @@ import { useTokens, useModelEarnings, useAdminStats } from './hooks';
 import { useResponsive, getResponsiveSpacing, getResponsiveText, getResponsiveGrid } from './responsive';
 import { apiUtils, streamingAPI } from './api';
 import { ChatIntegration } from './ChatComponents';
+import LiveModelsSection from './components/LiveModelsSection';
 
 // Updated Register Page Component (Backend Integrated)
 export const RegisterPage = () => {
