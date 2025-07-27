@@ -6,15 +6,16 @@ import { AuthProvider, useAuth } from './AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import {
   AgeVerificationModal,
+} from './components';
+import {
   LoginPage,
   RegisterPage,
   ViewerDashboard,
   ModelDashboard,
   AdminDashboard,
-  StreamingInterface,
   TokenPurchasePage,
-  PrivateShowInterface,
-} from './components';
+  IntegratedStreamingInterface as StreamingInterface,
+} from './IntegratedComponents';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
