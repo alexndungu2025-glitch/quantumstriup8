@@ -284,68 +284,6 @@ export const chatAPI = {
   }
 };
 
-// Streaming API
-export const streamingAPI = {
-  getLiveModels: async () => {
-    const response = await api.get('/streaming/models/live');
-    return response.data;
-  },
-  
-  createStreamingSession: async (modelId, sessionType = 'public') => {
-    const response = await api.post('/streaming/session', {
-      model_id: modelId,
-      session_type: sessionType
-    });
-    return response.data;
-  },
-  
-  endStreamingSession: async (sessionId) => {
-    const response = await api.delete(`/streaming/session/${sessionId}`);
-    return response.data;
-  },
-  
-  requestPrivateShow: async (modelId, durationMinutes = null) => {
-    const response = await api.post('/streaming/private-show', {
-      model_id: modelId,
-      duration_minutes: durationMinutes
-    });
-    return response.data;
-  },
-  
-  acceptPrivateShow: async (showId) => {
-    const response = await api.patch(`/streaming/private-show/${showId}/accept`);
-    return response.data;
-  },
-  
-  endPrivateShow: async (showId) => {
-    const response = await api.patch(`/streaming/private-show/${showId}/end`);
-    return response.data;
-  },
-  
-  updateModelStatus: async (isLive, isAvailable) => {
-    const response = await api.patch('/streaming/models/status', {
-      is_live: isLive,
-      is_available: isAvailable
-    });
-    return response.data;
-  },
-  
-  sendWebRTCSignal: async (sessionId, signalType, signalData, targetUserId) => {
-    const response = await api.post('/streaming/webrtc/signal', {
-      session_id: sessionId,
-      signal_type: signalType,
-      signal_data: signalData,
-      target_user_id: targetUserId
-    });
-    return response.data;
-  },
-  
-  getWebRTCSignals: async (sessionId) => {
-    const response = await api.get(`/streaming/webrtc/signals/${sessionId}`);
-    return response.data;
-  }
-};
-
 // Utility functions
 export const apiUtils = {
   handleApiError: (error) => {
