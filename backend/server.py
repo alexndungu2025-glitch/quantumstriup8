@@ -58,6 +58,7 @@ api_router.include_router(token_router, prefix="/tokens", tags=["Token System"])
 api_router.include_router(model_router, prefix="/models", tags=["Model Features"])
 api_router.include_router(admin_router, prefix="/admin", tags=["Admin Panel"])
 api_router.include_router(streaming_router, prefix="/streaming", tags=["Live Streaming"])
+api_router.include_router(chat_router, prefix="/chat", tags=["Chat System"])
 
 # Include the router in the main app
 app.include_router(api_router)
