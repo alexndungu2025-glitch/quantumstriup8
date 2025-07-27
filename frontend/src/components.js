@@ -1839,7 +1839,7 @@ export const PrivateShowInterface = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Redirect based on user role to the appropriate streaming interface
     if (user?.role === 'model') {
       navigate('/live-streaming/model');
