@@ -56,6 +56,22 @@ export const useWebRTCStreaming = () => {
     setError(null);
     
     try {
+      // Check if we're on HTTPS or localhost (required for getUserMedia)
+      if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+        throw new Error('Camera access requires HTTPS connection');
+      }
+
+      // Check if mediaDevices is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access not supported in this browser');
+      }
+
+      // Check permissions first
+      const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+      if (permissionStatus.state === 'denied') {
+        throw new Error('Camera permission was denied. Please enable camera access in your browser settings.');
+      }
+
       const constraints = {
         video: VIDEO_QUALITY_PRESETS[quality],
         audio: {
@@ -71,12 +87,31 @@ export const useWebRTCStreaming = () => {
       // Display local video
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
+        localVideoRef.current.muted = true; // Prevent feedback
+        localVideoRef.current.playsInline = true; // Important for mobile
       }
       
       return stream;
     } catch (err) {
       console.error('Error accessing media devices:', err);
-      setError('Could not access camera/microphone. Please check permissions.');
+      
+      let errorMessage = 'Could not access camera/microphone.';
+      
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        errorMessage = 'Camera permission denied. Please allow camera access and try again.';
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        errorMessage = 'No camera or microphone found. Please connect a camera and try again.';
+      } else if (err.name === 'NotSupportedError' || err.name === 'ConstraintNotSatisfiedError') {
+        errorMessage = 'Camera settings not supported. Try with different quality settings.';
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        errorMessage = 'Camera is being used by another application. Please close other apps and try again.';
+      } else if (err.message.includes('HTTPS')) {
+        errorMessage = 'Camera access requires a secure connection (HTTPS).';
+      } else if (err.message.includes('not supported')) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
       throw err;
     } finally {
       setIsLoading(false);
