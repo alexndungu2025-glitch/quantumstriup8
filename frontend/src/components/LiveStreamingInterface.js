@@ -229,16 +229,16 @@ export const ModelLiveStreamingInterface = () => {
         </div>
 
         {/* Side Panel */}
-        <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
-          <div className="p-4 border-b border-gray-700">
-            <h3 className="text-white font-semibold">Stream Dashboard</h3>
+        <div className={`${isMobile ? 'w-full' : 'w-80'} bg-gray-800 ${isMobile ? '' : 'border-l border-gray-700'} flex flex-col`}>
+          <div className={`${spacing.card} border-b border-gray-700`}>
+            <h3 className={`text-white font-semibold ${textSizes.h3}`}>Stream Dashboard</h3>
           </div>
           
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className={`flex-1 overflow-y-auto ${spacing.container} space-y-4`}>
             {/* Stream Stats */}
-            <div className="bg-gray-700 rounded-lg p-4">
-              <h4 className="text-white font-semibold mb-3">Session Stats</h4>
-              <div className="space-y-2 text-sm">
+            <div className={`bg-gray-700 rounded-lg ${spacing.card}`}>
+              <h4 className={`text-white font-semibold mb-3 ${textSizes.body}`}>Session Stats</h4>
+              <div className={`space-y-2 ${textSizes.small}`}>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Duration:</span>
                   <span className="text-white">{formatDuration(sessionDuration)}</span>
