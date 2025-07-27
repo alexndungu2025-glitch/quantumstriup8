@@ -652,7 +652,7 @@ export const Header = ({ userType, isAuthenticated, onLogout, userTokens = 0 }) 
 
   return (
     <>
-      <header className="bg-gray-900 border-b border-gray-700 px-4 py-3 relative">
+      <header className="bg-gray-900 border-b border-gray-700 px-4 py-3 fixed top-0 left-0 right-0 z-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             {isMobile && (
@@ -807,34 +807,6 @@ export const Header = ({ userType, isAuthenticated, onLogout, userTokens = 0 }) 
         </div>
       )}
     </>
-  );
-              
-              <button
-                onClick={onLogout}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
-              >
-                Logout
-              </button>
-            </div>
-          ) : (
-            <>
-              <button
-                onClick={() => navigateTo('register')}
-                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg mr-2 border border-gray-600"
-              >
-                Sign Up
-              </button>
-              <button
-                onClick={() => navigateTo('login')}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-purple-700 hover:to-blue-700"
-              >
-                Sign In
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    </header>
   );
 };
 
