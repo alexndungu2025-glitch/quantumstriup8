@@ -846,6 +846,9 @@ export const IntegratedStreamingInterface = () => {
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Live Models Section - New WebRTC Implementation */}
+        <LiveModelsSection />
+        
         <CategoryTabs />
         
         {liveModels.length === 0 ? (
