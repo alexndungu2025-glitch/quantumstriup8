@@ -1140,7 +1140,9 @@ export const BottomCTA = ({ isAuthenticated }) => {
 };
 
 // Token Purchase Page Component
-export const TokenPurchasePage = ({ navigateTo, userType }) => {
+export const TokenPurchasePage = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [selectedPackage, setSelectedPackage] = useState(tokenPackages[1]);
   const [paymentMethod, setPaymentMethod] = useState('mpesa');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -1154,16 +1156,16 @@ export const TokenPurchasePage = ({ navigateTo, userType }) => {
     setTimeout(() => {
       alert(`M-Pesa STK Push sent to ${phoneNumber}! Please enter your PIN to complete the purchase of ${selectedPackage.tokens} tokens for KES ${selectedPackage.price}.`);
       setIsProcessing(false);
-      navigateTo('viewer-dashboard');
+      navigate('/viewer-dashboard');
     }, 2000);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-gray-900 to-black">
       <Header 
-        userType={userType} 
+        userType={user?.role} 
         isAuthenticated={true}
-        onLogout={() => navigateTo('home')}
+        onLogout={() => navigate('/')}
       />
       
       <div className="max-w-4xl mx-auto p-6 pt-8">
