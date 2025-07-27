@@ -7,13 +7,13 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import {
   AgeVerificationModal,
   PrivateShowInterface,
-} from './components';
-import {
   LoginPage,
-  RegisterPage,
   ViewerDashboard,
   ModelDashboard,
   AdminDashboard,
+} from './components';
+import {
+  RegisterPage,
   TokenPurchasePage,
   IntegratedStreamingInterface as StreamingInterface,
 } from './IntegratedComponents';
