@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from './AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import {
   AgeVerificationModal,
+  PrivateShowInterface,
 } from './components';
 import {
   LoginPage,
